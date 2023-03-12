@@ -1,7 +1,7 @@
 use axum::{
     extract::{Path, State},
-    http::StatusCode,
-    response::Html,
+    http::{Response, StatusCode},
+    response::{Html, IntoResponse},
 };
 use maud::{html, Markup, PreEscaped, DOCTYPE};
 
@@ -33,10 +33,10 @@ pub async fn root(State(state): State<AppState>) -> Markup {
                 h2 { "Blog" }
                 ul {
                     @for blogpost in &state.blogposts {
-                        @if blogpost.1.archive == false {
+                        @if blogpost.archived == false {
                             li {
-                                (blogpost.1.date.format("%d-%m-%Y")) " - "
-                                a href=(format!("/blog/{}", blogpost.0)) { (blogpost.1.title) }
+                                (blogpost.date.format("%d-%m-%Y")) " - "
+                                a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
                             }
                         }
                     }
@@ -53,7 +53,7 @@ pub async fn root(State(state): State<AppState>) -> Markup {
                 h2 { "Info" }
                 p { "Hi there, I am an aspiring software developer, from
                 Copenhagen, Denmark, who has a passion for computers and enjoys
-                learning about new things and technoologies" }
+                learning about new things and technologies" }
                 br;
                 ul {
                     li {
@@ -94,25 +94,41 @@ pub async fn root(State(state): State<AppState>) -> Markup {
     }
 }
 
-pub async fn handle_404() -> (StatusCode, &'static str) {
-    (StatusCode::NOT_FOUND, "404 Not found")
+pub async fn handle_404() -> (StatusCode, PreEscaped<String>) {
+    (
+        StatusCode::NOT_FOUND,
+        html! {
+            (header())
+            p { "404 Not found" }
+        },
+    )
 }
 
-pub async fn handle_blog(Path(url): Path<String>, State(state): State<AppState>) -> Markup {
-    // TODO: Check if blogpost exists
-    let blogpost = state.blogposts.get(&url).unwrap();
+pub async fn handle_blog(
+    Path(url): Path<String>,
+    State(state): State<AppState>,
+) -> impl IntoResponse {
+    let blogpost = state.blogposts.iter().find(|blogpost| blogpost.url == url);
 
-    html! {
-        (header())
-        main {
-            section #h {
-                h2 { (blogpost.title) }
-                span style="opacity: 0.7;" { (blogpost.date.format("%d-%m-%Y")) }
-                br;
-                p {
-                    (PreEscaped(blogpost.content.to_string()))
+    match blogpost {
+        Some(blogpost) => (
+            StatusCode::OK,
+            html! {
+                (header())
+                main {
+                    section #h {
+                        div .blogpost {
+                            h2 { (blogpost.title) }
+                            span style="opacity: 0.7;" { (blogpost.date.format("%d-%m-%Y")) }
+                            br;
+                            p {
+                                (PreEscaped(blogpost.content.to_string()))
+                            }
+                        }
+                    }
                 }
-            }
-        }
+            },
+        ),
+        None => handle_404().await,
     }
 }

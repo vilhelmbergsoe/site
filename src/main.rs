@@ -1,8 +1,5 @@
 use axum::{routing::get, Router};
-use color_eyre::{
-    eyre::{Result},
-    Report,
-};
+use color_eyre::{eyre::Result, Report};
 use comrak::{markdown_to_html, ComrakOptions};
 use nom::{
     bytes::complete::{tag, take_until},
@@ -19,7 +16,7 @@ use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
 mod handlers;
-use handlers::{handle_blog, root};
+use handlers::{handle_404, handle_blog, root};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -41,7 +38,8 @@ async fn main() -> Result<()> {
         .route("/", get(root))
         .with_state(state.clone())
         .route("/blog/:url", get(handle_blog).with_state(state))
-        .nest_service("/assets", ServeDir::new("assets"));
+        .nest_service("/assets", ServeDir::new("assets"))
+        .fallback(get(handle_404));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
@@ -55,22 +53,23 @@ async fn main() -> Result<()> {
 
 #[derive(Clone)]
 struct BlogPost {
+    url: String,
     title: String,
     date: DateTime<Utc>,
-    archive: bool,
+    archived: bool,
     content: String,
 }
 
 #[derive(Clone)]
 pub struct AppState {
-    blogposts: HashMap<String, BlogPost>,
+    blogposts: Vec<BlogPost>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Frontmatter {
     title: String,
     date: String,
-    archive: bool,
+    archived: bool,
 }
 
 fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
@@ -83,7 +82,11 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
     Ok((frontmatter, content))
 }
 
-fn parse_blog(path: &std::path::PathBuf, options: ComrakOptions) -> Result<BlogPost, Report> {
+fn parse_blog(
+    url: &str,
+    path: &std::path::PathBuf,
+    options: ComrakOptions,
+) -> Result<BlogPost, Report> {
     let text = std::fs::read_to_string(&path).unwrap();
 
     let (frontmatter, content) = parse_frontmatter(&text).unwrap();
@@ -96,41 +99,41 @@ fn parse_blog(path: &std::path::PathBuf, options: ComrakOptions) -> Result<BlogP
     let html = markdown_to_html(content, &options);
 
     Ok(BlogPost {
+        url: url.to_string(),
         title: frontmatter.title,
         date,
-        archive: frontmatter.archive,
+        archived: frontmatter.archived,
         content: html,
     })
 }
 
 fn new_state() -> Result<AppState> {
     let mut state = AppState {
-        blogposts: HashMap::new(),
+        blogposts: Vec::new(),
     };
 
-    let mut blogposts: Vec<(String, BlogPost)> = Vec::new();
+    let mut blogposts: Vec<BlogPost> = Vec::new();
 
     for entry in std::fs::read_dir("blog")? {
         let entry = entry?;
         let path = entry.path();
         if path.is_file() {
-            // TODO: skip if this fails
-            let url = path.file_stem().unwrap().to_str().unwrap();
+            if let Some(stem) = path.file_stem() {
+                let url = stem.to_str().unwrap();
 
-            let options = ComrakOptions::default();
+                // TODO: add syntax highlighting for code blocks
+                let options = ComrakOptions::default();
 
-            let blogpost = parse_blog(&path, options)?;
-            blogposts.push((url.to_string(), blogpost));
-            tracing::debug!("loaded blogpost - {}", url);
+                let blogpost = parse_blog(url, &path, options)?;
+                blogposts.push(blogpost);
+                tracing::debug!("loaded blogpost - {}", url);
+            }
         }
     }
 
-    // TODO: fix sorting sometimes not working right
-    blogposts.sort_by(|(_, a), (_, b)| b.date.cmp(&a.date));
+    blogposts.sort_by(|a, b| b.date.cmp(&a.date));
 
-    for blogpost in blogposts {
-        state.blogposts.insert(blogpost.0, blogpost.1);
-    }
+    state.blogposts = blogposts;
 
     Ok(state)
 }

@@ -1,12 +1,13 @@
 ---
 title: Creating my website
 date: 28-08-2022
-archive: false
+archived: false
 ---
 
 _The site implementation explained here is very outdated. Each blog post is now_
-_parsed at start up from a file, and it has been ported to rust. You can check_
-_out the code [here](https://github.com/vilhelmbergsoe/sb)_
+_parsed at start up from a file, and the entire site has been ported to rust._
+_You can check out the old code [here](https://github.com/vilhelmbergsoe/sb),_
+_and the new [here](https://github.com/vilhelmbergsoe/site)_
 
 <br/>
 

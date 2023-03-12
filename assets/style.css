@@ -43,7 +43,6 @@ br,
 header,
 ul {
     margin-bottom: 1em;
-    margin-top: 1em;
 }
 
 ul {
@@ -125,4 +124,14 @@ input, textarea, button {
     width: 1.5rem;
     height: 1.5rem;
     vertical-align: middle;
+}
+
+div.blogpost h2 {
+    margin-bottom: 0.2em;
+}
+div.blogpost h3 {
+    margin-top: 0.6em;
+}
+div.blogpost p {
+    margin-top: 0.4em;
 }
