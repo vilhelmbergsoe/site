@@ -1,6 +1,7 @@
 use axum::{routing::get, Router};
 use color_eyre::{eyre::Result, Report};
-use comrak::{markdown_to_html, ComrakOptions};
+use comrak::plugins::syntect::SyntectAdapter;
+use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins};
 use nom::{
     bytes::complete::{tag, take_until},
     sequence::delimited,
@@ -8,7 +9,7 @@ use nom::{
 };
 use serde::{Deserialize, Serialize};
 use serde_yaml;
-use std::{collections::HashMap, net::SocketAddr};
+use std::net::SocketAddr;
 use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt};
 
 use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
@@ -86,6 +87,7 @@ fn parse_blog(
     url: &str,
     path: &std::path::PathBuf,
     options: ComrakOptions,
+    plugins: ComrakPlugins,
 ) -> Result<BlogPost, Report> {
     let text = std::fs::read_to_string(&path).unwrap();
 
@@ -96,7 +98,7 @@ fn parse_blog(
     let naive_datetime = naive_date.and_hms_opt(0, 0, 0).unwrap();
     let date: DateTime<Utc> = Utc.from_utc_datetime(&naive_datetime);
 
-    let html = markdown_to_html(content, &options);
+    let html = markdown_to_html_with_plugins(content, &options, &plugins);
 
     Ok(BlogPost {
         url: url.to_string(),
@@ -121,10 +123,14 @@ fn new_state() -> Result<AppState> {
             if let Some(stem) = path.file_stem() {
                 let url = stem.to_str().unwrap();
 
-                // TODO: add syntax highlighting for code blocks
+                // TODO: implement own theme
+                let adapter = SyntectAdapter::new("base16-eighties.dark");
                 let options = ComrakOptions::default();
+                let mut plugins = ComrakPlugins::default();
 
-                let blogpost = parse_blog(url, &path, options)?;
+                plugins.render.codefence_syntax_highlighter = Some(&adapter);
+
+                let blogpost = parse_blog(url, &path, options, plugins)?;
                 blogposts.push(blogpost);
                 tracing::debug!("loaded blogpost - {}", url);
             }

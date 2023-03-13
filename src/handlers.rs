@@ -1,7 +1,7 @@
 use axum::{
     extract::{Path, State},
-    http::{Response, StatusCode},
-    response::{Html, IntoResponse},
+    http::StatusCode,
+    response::IntoResponse,
 };
 use maud::{html, Markup, PreEscaped, DOCTYPE};
 

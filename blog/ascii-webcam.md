@@ -12,8 +12,7 @@ image and maps each luma value to a character in a character set that
 incrementally fills the font space and gives the 
 illusion of a brighter pixel.
 
-For example, a ' ' (space) character would represent a darker pixel and '@'
-would represent a brighter pixel.
+For example, a " " character would represent a darker pixel and '@' would represent a brighter pixel.
 
 [Rust](https://www.rust-lang.org/) 🦀 was my choice of programming language for
 implementing the ASCII webcam, mainly because I haven't had a chance to use it

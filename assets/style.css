@@ -99,20 +99,15 @@ hr {
     margin-bottom: 1em;
 }
 
+/* TODO: fix inline code style */
+
 pre {
-    color: #fefefe;
-    background-color: #3b3b3b;
-    display: block;
-    padding: 0.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
     border-radius: 4px;
     overflow: auto;
-}
-
-code {
-    color: #fefefe;
-    background-color: #3b3b3b;
-    padding: 3px;
-    border-radius: 3px;
 }
 
 input, textarea, button {
