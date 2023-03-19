@@ -11,6 +11,7 @@ fn header() -> Markup {
     html! {
         (DOCTYPE)
         title { "Vilhelm Bergsøe" };
+        meta content="width=device-width,initial-scale=1" name="viewport";
         meta content="Vilhelm Bergsøe" property="og:title";
         meta content="Vilhelm Bergsøe" property="description";
         meta content="Vilhelm Bergsøe" property="og:description";
