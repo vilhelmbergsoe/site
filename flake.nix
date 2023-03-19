@@ -100,10 +100,16 @@
           });
         };
 
-        packages.default = site;
-
-        apps.default = flake-utils.lib.mkApp {
-          drv = site;
+        packages = {
+          inherit site;
+          default = pkgs.symlinkJoin {
+            inherit (site) name pname version;
+            nativeBuildInputs = [pkgs.makeWrapper];
+            paths = [site];
+            postBuild = ''
+              wrapProgram $out/bin/site --set-default SITE_ROOT ${./.}
+            '';
+          };
         };
 
         devShells.default = pkgs.mkShell {

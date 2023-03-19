@@ -10,6 +10,7 @@ use nom::{
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::net::SocketAddr;
+use std::path::{Path, PathBuf};
 use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt};
 
 use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
@@ -30,7 +31,13 @@ async fn main() -> Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let state = new_state().unwrap();
+    // gets SITE_ROOT env var used for nix deployment
+    let site_root = std::env::var("SITE_ROOT").unwrap_or("./".to_string());
+    let path_prefix = Path::new(&site_root);
+
+    tracing::debug!("site root: {}", path_prefix.display());
+
+    let state = new_state(path_prefix).unwrap();
 
     let path = std::env::current_dir().unwrap();
     tracing::debug!("current working directory: {}", path.display());
@@ -39,7 +46,10 @@ async fn main() -> Result<()> {
         .route("/", get(root))
         .with_state(state.clone())
         .route("/blog/:url", get(handle_blog).with_state(state))
-        .nest_service("/assets", ServeDir::new("assets"))
+        .nest_service(
+            "/assets",
+            ServeDir::new(path_prefix.join(Path::new("assets"))),
+        )
         .fallback(get(handle_404));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
@@ -85,7 +95,7 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
 
 fn parse_blog(
     url: &str,
-    path: &std::path::PathBuf,
+    path: &PathBuf,
     options: ComrakOptions,
     plugins: ComrakPlugins,
 ) -> Result<BlogPost, Report> {
@@ -109,14 +119,14 @@ fn parse_blog(
     })
 }
 
-fn new_state() -> Result<AppState> {
+fn new_state(path_prefix: &Path) -> Result<AppState> {
     let mut state = AppState {
         blogposts: Vec::new(),
     };
 
     let mut blogposts: Vec<BlogPost> = Vec::new();
 
-    for entry in std::fs::read_dir("blog")? {
+    for entry in std::fs::read_dir(path_prefix.join(Path::new("blog")))? {
         let entry = entry?;
         let path = entry.path();
         if path.is_file() {
