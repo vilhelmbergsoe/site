@@ -10,12 +10,20 @@ use crate::AppState;
 fn header() -> Markup {
     html! {
         (DOCTYPE)
-        title { "Vilhelm Bergsøe" };
+
+        meta charset="UTF-8";
         meta content="width=device-width,initial-scale=1" name="viewport";
+
+        title { "Vilhelm Bergsøe" };
         meta content="Vilhelm Bergsøe" property="og:title";
-        meta content="Vilhelm Bergsøe" property="description";
-        meta content="Vilhelm Bergsøe" property="og:description";
-        link rel="stylesheet" href="/assets/style.css";
+
+        meta content="Personal portfolio site of Vilhelm Bergsøe" name="description";
+        meta content="Personal portfolio site of Vilhelm Bergsøe" property="og:description";
+
+        link inline rel="stylesheet" href="/assets/style.css";
+
+        link rel="canonical" href="https://bergsoe.net/";
+
         header {
             a href="/#h" { "Vilhelm Bergsøe" }
             nav {
@@ -54,7 +62,7 @@ pub async fn root(State(state): State<AppState>) -> Markup {
                 h2 { "Info" }
                 p { "Hi there, I am an aspiring software developer, from
                 Copenhagen, Denmark, who has a passion for computers and enjoys
-                learning about new things and technologies" }
+                learning about new things and technologies." }
                 br;
                 ul {
                     li {
@@ -77,7 +85,7 @@ pub async fn root(State(state): State<AppState>) -> Markup {
                 h3 { "Skills" }
                 br;
                 ul {
-                    li { "Programming in Go" img .go-icon src="/assets/go.svg"; ", Rust 🦀, C, Zig and JavaScript" }
+                    li { "Programming in Go" img .go-icon src="/assets/go.svg" alt="golang gopher"; ", Rust 🦀, C, Zig and JavaScript" }
                     li { "Linux system administration" }
                     li { "Web development technologies: Docker, Git HTML, CSS, SQL and React" }
                     li { "Some experience contributing to open source projects" }
