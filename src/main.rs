@@ -1,5 +1,5 @@
 use axum::{routing::get, Router};
-use color_eyre::{eyre::Result, Report};
+use color_eyre::{eyre::eyre, eyre::Result, Report};
 use comrak::plugins::syntect::SyntectAdapter;
 use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins};
 use nom::{
@@ -38,9 +38,6 @@ async fn main() -> Result<()> {
     tracing::debug!("site root: {}", path_prefix.display());
 
     let state = new_state(path_prefix).unwrap();
-
-    let path = std::env::current_dir().unwrap();
-    tracing::debug!("current working directory: {}", path.display());
 
     let app = Router::new()
         .route("/", get(root))
@@ -126,7 +123,12 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     let mut blogposts: Vec<BlogPost> = Vec::new();
 
-    for entry in std::fs::read_dir(path_prefix.join(Path::new("blog")))? {
+    let blog_dir = match std::fs::read_dir(path_prefix.join(Path::new("blog"))) {
+        Ok(dir) => dir,
+        Err(e) => return Err(eyre!(format!("Error reading blog directory: {}", e))),
+    };
+
+    for entry in blog_dir {
         let entry = entry?;
         let path = entry.path();
         if path.is_file() {
