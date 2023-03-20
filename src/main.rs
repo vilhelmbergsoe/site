@@ -8,7 +8,6 @@ use nom::{
     IResult,
 };
 use serde::{Deserialize, Serialize};
-use serde_yaml;
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt};
@@ -32,7 +31,7 @@ async fn main() -> Result<()> {
         .init();
 
     // gets SITE_ROOT env var used for nix deployment
-    let site_root = std::env::var("SITE_ROOT").unwrap_or("./".to_string());
+    let site_root = std::env::var("SITE_ROOT").unwrap_or_else(|_| "./".to_string());
     let path_prefix = Path::new(&site_root);
 
     tracing::debug!("site root: {}", path_prefix.display());
@@ -96,7 +95,7 @@ fn parse_blog(
     options: ComrakOptions,
     plugins: ComrakPlugins,
 ) -> Result<BlogPost, Report> {
-    let text = std::fs::read_to_string(&path).unwrap();
+    let text = std::fs::read_to_string(path).unwrap();
 
     let (frontmatter, content) = parse_frontmatter(&text).unwrap();
     let frontmatter: Frontmatter = serde_yaml::from_str(frontmatter)?;
@@ -125,7 +124,7 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     let blog_dir = match std::fs::read_dir(path_prefix.join(Path::new("blog"))) {
         Ok(dir) => dir,
-        Err(e) => return Err(eyre!(format!("Error reading blog directory: {}", e))),
+        Err(e) => return Err(eyre!(format!("Error reading blog directory: {e}"))),
     };
 
     for entry in blog_dir {

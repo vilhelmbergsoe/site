@@ -42,7 +42,7 @@ pub async fn root(State(state): State<AppState>) -> Markup {
                 h2 { "Blog" }
                 ul {
                     @for blogpost in &state.blogposts {
-                        @if blogpost.archived == false {
+                        @if !blogpost.archived {
                             li {
                                 (blogpost.date.format("%d-%m-%Y")) " - "
                                 a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
