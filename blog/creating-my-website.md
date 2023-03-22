@@ -4,16 +4,17 @@ date: 28-08-2022
 archived: false
 ---
 
-_The site implementation explained here is very outdated. Each blog post is now_
-_parsed at start up from a file, and the entire site has been ported to rust._
-_You can check out the old code [here](https://github.com/vilhelmbergsoe/sb),_
-_and the new [here](https://github.com/vilhelmbergsoe/site)_
+### NOTICE
+
+_This post is very outdated. The entire site has been ported to rust and the_
+_source is [here](https://github.com/vilhelmbergsoe/site). You can check out_
+_the old code [here](https://github.com/vilhelmbergsoe/sb)._
 
 <br/>
 
 ### The Beginning
 
-I've had a domain for a while now, but haven't gotten around to building a
+I've had a domain for a while now, but haven't got around to building a
 portfolio site until now.
 
 I wanted to do something a little more unique than just finding a nice
@@ -28,7 +29,7 @@ posts.
 
 ### The logistics
 
-I wanted the template to be very minimal and found [this](https://minwiz.com/)
+I wanted the website to be very minimal and found [this](https://minwiz.com/)
 nice template for a minimal responsive website.
 
 I added minimal changes to it including: go templating, simple JavaScript

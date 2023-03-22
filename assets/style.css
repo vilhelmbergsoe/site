@@ -130,3 +130,7 @@ div.blogpost h3 {
 div.blogpost p {
     margin-top: 0.4em;
 }
+
+footer {
+    text-align: center;
+}
