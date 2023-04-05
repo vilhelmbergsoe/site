@@ -122,6 +122,7 @@
           nativeBuildInputs = with pkgs; [
             cargo
             rustc
+            rust-analyzer
           ];
         };
       });

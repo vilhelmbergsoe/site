@@ -25,7 +25,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "site=debug,tower_http=debug".into()),
+                .unwrap_or_else(|_| "site=info,tower_http=info".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -34,7 +34,7 @@ async fn main() -> Result<()> {
     let site_root = std::env::var("SITE_ROOT").unwrap_or_else(|_| "./".to_string());
     let path_prefix = Path::new(&site_root);
 
-    tracing::debug!("site root: {}", path_prefix.display());
+    tracing::info!("site root: {}", path_prefix.display());
 
     let state = new_state(path_prefix).unwrap();
 
@@ -49,7 +49,7 @@ async fn main() -> Result<()> {
         .fallback(get(handle_404));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-    tracing::debug!("listening on {}", addr);
+    tracing::info!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
         .await
@@ -143,7 +143,7 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
                 let blogpost = parse_blog(url, &path, options, plugins)?;
                 blogposts.push(blogpost);
-                tracing::debug!("loaded blogpost - {}", url);
+                tracing::info!("loaded blogpost - {}", url);
             }
         }
     }
