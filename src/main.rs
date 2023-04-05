@@ -97,8 +97,19 @@ fn parse_blog(
 ) -> Result<BlogPost, Report> {
     let text = std::fs::read_to_string(path).unwrap();
 
-    let (frontmatter, content) = parse_frontmatter(&text).unwrap();
-    let frontmatter: Frontmatter = serde_yaml::from_str(frontmatter)?;
+    let (frontmatter, content) = match parse_frontmatter(&text) {
+        Ok((fm, content)) => (fm, content),
+        Err(_) => {
+            return Err(eyre!(format!(
+                "Error parsing frontmatter ({url}). Most likely missing delimiter \"---\\n\""
+            )))
+        }
+    };
+
+    let frontmatter: Frontmatter = match serde_yaml::from_str(frontmatter) {
+        Ok(fm) => fm,
+        Err(err) => return Err(eyre!(format!("Error parsing blog ({url}): {err}"))),
+    };
 
     let naive_date = NaiveDate::parse_from_str(&frontmatter.date, "%d-%m-%Y").unwrap();
     let naive_datetime = naive_date.and_hms_opt(0, 0, 0).unwrap();
@@ -124,7 +135,7 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     let blog_dir = match std::fs::read_dir(path_prefix.join(Path::new("blog"))) {
         Ok(dir) => dir,
-        Err(e) => return Err(eyre!(format!("Error reading blog directory: {e}"))),
+        Err(err) => return Err(eyre!(format!("Error reading blog directory: {err}"))),
     };
 
     for entry in blog_dir {
