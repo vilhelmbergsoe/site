@@ -104,8 +104,7 @@ hr {
 pre {
     font-size: 0.8em;
     margin-bottom: 0.6em;
-    padding-left: 0.6em;
-    padding-right: 0.6em;
+    padding: 0.6em;
     border-radius: 4px;
     overflow: auto;
 }
@@ -113,8 +112,7 @@ pre {
 code {
     background-color: #2d2d2d;
     color: #fefefe;
-    padding-left: 0.1em;
-    padding-right: 0.1em;
+    padding: 0.1em;
     border-radius: 2px;
 }
 
@@ -141,6 +139,11 @@ div.blogpost ul {
     margin: 0 !important;
 }
 
+.blogtitle {
+    margin-bottom: 0 !important;
+}
+
 footer {
     text-align: center;
+    margin-bottom: 3em;
 }

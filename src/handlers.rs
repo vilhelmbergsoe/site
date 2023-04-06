@@ -4,21 +4,22 @@ use axum::{
     response::IntoResponse,
 };
 use maud::{html, Markup, PreEscaped, DOCTYPE};
+use rayon::prelude::*;
 
 use crate::AppState;
 
-fn header() -> Markup {
+fn header(title: &str, description: &str) -> Markup {
     html! {
         (DOCTYPE)
 
         meta charset="UTF-8";
         meta content="width=device-width,initial-scale=1" name="viewport";
 
-        title { "Vilhelm Bergsøe" };
-        meta content="Vilhelm Bergsøe" property="og:title";
+        title { (title) };
+        meta content=(title) property="og:title";
 
-        meta content="Personal portfolio site of Vilhelm Bergsøe" name="description";
-        meta content="Personal portfolio site of Vilhelm Bergsøe" property="og:description";
+        meta content=(description) name="description";
+        meta content=(description) property="og:description";
 
         link inline rel="stylesheet" href="/assets/style.css";
 
@@ -44,7 +45,7 @@ fn footer() -> Markup {
 
 pub async fn root(State(state): State<AppState>) -> Markup {
     html! {
-        (header())
+        (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
         main {
             section #b {
                 h2 { "Blog" }
@@ -116,7 +117,7 @@ pub async fn handle_404() -> (StatusCode, PreEscaped<String>) {
     (
         StatusCode::NOT_FOUND,
         html! {
-            (header())
+            (header("Vilhelm Bergsøe - 404 Not Found", "404 Not Found"))
             p { "404 Not found" }
         },
     )
@@ -126,25 +127,32 @@ pub async fn handle_blog(
     Path(url): Path<String>,
     State(state): State<AppState>,
 ) -> impl IntoResponse {
-    let blogpost = state.blogposts.iter().find(|blogpost| blogpost.url == url);
+    let blogpost = state
+        .blogposts
+        .par_iter()
+        .find_first(|blogpost| blogpost.url == url);
 
     match blogpost {
         Some(blogpost) => (
             StatusCode::OK,
             html! {
-                (header())
+                (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Blog"))
                 main {
                     section #h {
                         div .blogpost {
-                            h2 { (blogpost.title) }
+                            h2 .blogtitle { (blogpost.title) }
                             span style="opacity: 0.7;" { (blogpost.date.format("%d-%m-%Y")) }
                             br;
                             p {
                                 (PreEscaped(blogpost.content.to_string()))
                             }
                         }
+
+                        span { (format!("tags: {}", blogpost.tags.join(", "))) }
                     }
                 }
+
+                (footer())
             },
         ),
         None => handle_404().await,

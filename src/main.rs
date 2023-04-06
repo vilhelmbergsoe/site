@@ -64,6 +64,7 @@ struct BlogPost {
     title: String,
     date: DateTime<Utc>,
     archived: bool,
+    tags: Vec<String>,
     content: String,
 }
 
@@ -77,6 +78,7 @@ struct Frontmatter {
     title: String,
     date: String,
     archived: bool,
+    tags: Vec<String>,
 }
 
 fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
@@ -122,6 +124,7 @@ fn parse_blog(
         title: frontmatter.title,
         date,
         archived: frontmatter.archived,
+        tags: frontmatter.tags,
         content: html,
     })
 }

@@ -2,6 +2,7 @@
 title: "Nix is pretty awesome ❄️"
 date: 05-04-2023
 archived: false
+tags: [nix, nixos, learning]
 ---
 
 ## Introduction

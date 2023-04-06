@@ -2,6 +2,7 @@
 title: Creating my website
 date: 28-08-2022
 archived: false
+tags: [go, website, blog]
 ---
 
 ## NOTICE

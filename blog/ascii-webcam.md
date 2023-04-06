@@ -2,6 +2,7 @@
 title: Making an ASCII webcam for the console
 date: 26-10-2022
 archived: false
+tags: [rust, asciicam, ascii, webcam]
 ---
 
 [This](https://www.youtube.com/watch?v=QMYfkOtYYlg) video recently popped up in
