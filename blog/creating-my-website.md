@@ -4,11 +4,11 @@ date: 28-08-2022
 archived: false
 ---
 
-### NOTICE
+## NOTICE
 
-_This post is very outdated. The entire site has been ported to rust and the_
-_source is [here](https://github.com/vilhelmbergsoe/site). You can check out_
-_the old code [here](https://github.com/vilhelmbergsoe/sb)._
+_This post is very outdated. The entire site has been ported to rust and the new
+codebase is [here](https://github.com/vilhelmbergsoe/site). You can check out
+the old code [here](https://github.com/vilhelmbergsoe/sb)._
 
 <br/>
 

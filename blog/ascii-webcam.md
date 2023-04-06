@@ -61,7 +61,7 @@ for each line, and finally just allocating enough space to fit the entire
 terminal buffer. This also helped out a good deal and allowed you to have a
 higher resolution "image" without noticable lag or scanlines.
 
-### Conclusion
+## Conclusion
 
 Benchmarking the program before and after the optimizations mentioned above and
 a few more in a well lit room to account for auto exposure, I observed a 230%

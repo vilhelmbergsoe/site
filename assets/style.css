@@ -102,12 +102,24 @@ hr {
 /* TODO: fix inline code style */
 
 pre {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding-left: 0.4em;
-    padding-right: 0.4em;
+    font-size: 0.8em;
+    margin-bottom: 0.6em;
+    padding-left: 0.6em;
+    padding-right: 0.6em;
     border-radius: 4px;
     overflow: auto;
+}
+
+code {
+    background-color: #2d2d2d;
+    color: #fefefe;
+    padding-left: 0.1em;
+    padding-right: 0.1em;
+    border-radius: 2px;
+}
+
+p code {
+    font-size: 0.9em;
 }
 
 input, textarea, button {
@@ -121,14 +133,12 @@ input, textarea, button {
     vertical-align: middle;
 }
 
-div.blogpost h2 {
-    margin-bottom: 0.2em;
+div.blogpost h2, div.blogpost h3, div.blogpost p, div.blogpost li {
+    margin-bottom: 0.4em;
 }
-div.blogpost h3 {
-    margin-top: 0.6em;
-}
-div.blogpost p {
-    margin-top: 0.4em;
+
+div.blogpost ul {
+    margin: 0 !important;
 }
 
 footer {
