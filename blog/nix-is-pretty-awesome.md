@@ -218,9 +218,9 @@ development shell environments:
 If we then want to build the derivation, we can simply run:
 
 ```console
-[vb@buckbeak:~/simple-c_example]$ nix build
-[vb@buckbeak:~/simple-c_example]$ # or
-[vb@buckbeak:~/simple-c_example]$ nix develop
+[vb@buckbeak:~/simple_c_example]$ nix build
+[vb@buckbeak:~/simple_c_example]$ # or
+[vb@buckbeak:~/simple_c_example]$ nix develop
 ```
 
 which will build the project and create a shell with all dependencies in path,
