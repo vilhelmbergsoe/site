@@ -42,7 +42,7 @@ h2,
 br,
 header,
 ul {
-    margin-bottom: 1em;
+    margin-bottom: 0.6em;
 }
 
 ul {
@@ -86,11 +86,7 @@ div {
     margin-bottom: 20px;
 }
 
-img {
-    width: 500px;
-}
-
-#b img {
+div.blogpost img {
     width: 100%;
 }
 
@@ -127,8 +123,14 @@ input, textarea, button {
 }
 
 .go-icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1em;
+    height: 1.4em;
+    vertical-align: middle;
+    margin-bottom: 0.2em;
+}
+
+.rss-icon {
+    height: 0.8em;
     vertical-align: middle;
 }
 

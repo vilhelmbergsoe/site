@@ -1,54 +1,15 @@
-use axum::{
-    extract::{Path, State},
-    http::StatusCode,
-    response::IntoResponse,
-};
-use maud::{html, Markup, PreEscaped, DOCTYPE};
-use rayon::prelude::*;
+use axum::extract::State;
+use maud::{html, Markup};
 
+use crate::fragments::{footer, header};
 use crate::AppState;
-
-fn header(title: &str, description: &str) -> Markup {
-    html! {
-        (DOCTYPE)
-
-        meta charset="UTF-8";
-        meta content="width=device-width,initial-scale=1" name="viewport";
-
-        title { (title) };
-        meta content=(title) property="og:title";
-
-        meta content=(description) name="description";
-        meta content=(description) property="og:description";
-
-        link inline rel="stylesheet" href="/assets/style.css";
-
-        link rel="canonical" href="https://bergsoe.net/";
-
-        header {
-            a href="/#h" { "Vilhelm Bergsøe" }
-            nav {
-                a href="/#b" { "Blog" }
-                a href="/#g" { "Contact" }
-            }
-        }
-    }
-}
-
-fn footer() -> Markup {
-    html! {
-        footer {
-            "© 2023 " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" } ", Powered by " a href="https://nixos.org" { "Nix" } " ❄️"
-        }
-    }
-}
 
 pub async fn root(State(state): State<AppState>) -> Markup {
     html! {
         (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
         main {
             section #b {
-                h2 { "Blog" }
+                h2 { "Blog " a href="/rss.xml" title="RSS Feed" { img .rss-icon src="/assets/rss.png" alt="rss"; } }
                 ul {
                     @for blogpost in &state.blogposts {
                         @if !blogpost.archived {
@@ -110,51 +71,5 @@ pub async fn root(State(state): State<AppState>) -> Markup {
             }
         }
         (footer())
-    }
-}
-
-pub async fn handle_404() -> (StatusCode, PreEscaped<String>) {
-    (
-        StatusCode::NOT_FOUND,
-        html! {
-            (header("Vilhelm Bergsøe - 404 Not Found", "404 Not Found"))
-            p { "404 Not found" }
-        },
-    )
-}
-
-pub async fn handle_blog(
-    Path(url): Path<String>,
-    State(state): State<AppState>,
-) -> impl IntoResponse {
-    let blogpost = state
-        .blogposts
-        .par_iter()
-        .find_first(|blogpost| blogpost.url == url);
-
-    match blogpost {
-        Some(blogpost) => (
-            StatusCode::OK,
-            html! {
-                (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Blog"))
-                main {
-                    section #h {
-                        div .blogpost {
-                            h2 .blogtitle { (blogpost.title) }
-                            span style="opacity: 0.7;" { (blogpost.date.format("%d-%m-%Y")) }
-                            br;
-                            p {
-                                (PreEscaped(blogpost.content.to_string()))
-                            }
-                        }
-
-                        span { (format!("tags: {}", blogpost.tags.join(", "))) }
-                    }
-                }
-
-                (footer())
-            },
-        ),
-        None => handle_404().await,
     }
 }

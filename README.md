@@ -19,6 +19,8 @@ nix run
 
 `/assets/{file}` static file serve directory
 
+`/feed.xml` rss feed
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit)

@@ -16,8 +16,10 @@ use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
 
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
-mod handlers;
-use handlers::{handle_404, handle_blog, root};
+pub mod handlers;
+use handlers::{handle_404, handle_blog, handle_rss, root};
+
+pub mod fragments;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -40,8 +42,9 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(root))
-        .with_state(state.clone())
-        .route("/blog/:url", get(handle_blog).with_state(state))
+        .route("/blog/:url", get(handle_blog))
+        .route("/rss.xml", get(handle_rss))
+        .with_state(state)
         .nest_service(
             "/assets",
             ServeDir::new(path_prefix.join(Path::new("assets"))),
@@ -59,7 +62,7 @@ async fn main() -> Result<()> {
 }
 
 #[derive(Clone)]
-struct BlogPost {
+pub struct BlogPost {
     url: String,
     title: String,
     date: DateTime<Utc>,
@@ -94,18 +97,15 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
 fn parse_blog(
     url: &str,
     path: &PathBuf,
-    options: ComrakOptions,
-    plugins: ComrakPlugins,
+    options: &ComrakOptions,
+    plugins: &ComrakPlugins,
 ) -> Result<BlogPost, Report> {
     let text = std::fs::read_to_string(path).unwrap();
 
-    let (frontmatter, content) = match parse_frontmatter(&text) {
-        Ok((fm, content)) => (fm, content),
-        Err(_) => {
-            return Err(eyre!(format!(
-                "Error parsing frontmatter ({url}). Most likely missing delimiter \"---\\n\""
-            )))
-        }
+    let Ok((frontmatter, content)) = parse_frontmatter(&text) else {
+        return Err(eyre!(format!(
+            "Error parsing frontmatter ({url}). Most likely missing delimiter \"---\\n\""
+        )))
     };
 
     let frontmatter: Frontmatter = match serde_yaml::from_str(frontmatter) {
@@ -130,10 +130,7 @@ fn parse_blog(
 }
 
 fn new_state(path_prefix: &Path) -> Result<AppState> {
-    let mut state = AppState {
-        blogposts: Vec::new(),
-    };
-
+    // Blog posts
     let mut blogposts: Vec<BlogPost> = Vec::new();
 
     let blog_dir = match std::fs::read_dir(path_prefix.join(Path::new("blog"))) {
@@ -155,7 +152,7 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
                 plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
-                let blogpost = parse_blog(url, &path, options, plugins)?;
+                let blogpost = parse_blog(url, &path, &options, &plugins)?;
                 blogposts.push(blogpost);
                 tracing::info!("loaded blogpost - {}", url);
             }
@@ -164,7 +161,5 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     blogposts.sort_by(|a, b| b.date.cmp(&a.date));
 
-    state.blogposts = blogposts;
-
-    Ok(state)
+    Ok(AppState { blogposts })
 }
