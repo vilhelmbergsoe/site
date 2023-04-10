@@ -1,0 +1,20 @@
+@use crate::BlogPost;
+
+@(posts: Vec<BlogPost>)
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Vilhelm's Blog</title>
+        <link>https://bergsoe.net/</link>
+        <description>My Blog RSS Feed</description>
+        @for post in posts {
+            <item>
+                <guid>https://bergsoe/blog/@post.url</guid>
+                <title>@post.title</title>
+                <link>https://bergsoe.net/blog/@post.url</link>
+                <description>tags: @post.tags.join(", ")</description>
+                <pubDate>@post.date.to_rfc2822()</pubDate>
+            </item>
+        }
+    </channel>
+</rss>

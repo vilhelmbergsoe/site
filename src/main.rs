@@ -163,3 +163,5 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     Ok(AppState { blogposts })
 }
+
+include!(concat!(env!("OUT_DIR"), "/templates.rs"));

@@ -1,10 +1,10 @@
-use axum::extract::State;
-use maud::{html, Markup};
+use axum::{extract::State, response::IntoResponse};
+use maud::html;
 
 use crate::fragments::{footer, header};
 use crate::AppState;
 
-pub async fn root(State(state): State<AppState>) -> Markup {
+pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
     html! {
         (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
         main {
