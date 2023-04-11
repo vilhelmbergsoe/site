@@ -19,7 +19,7 @@ nix run
 
 `/assets/{file}` static file serve directory
 
-`/feed.xml` rss feed
+`/rss.xml` rss feed
 
 ## License
 

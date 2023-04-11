@@ -30,14 +30,18 @@ pub async fn handle_blog(
                     section #h {
                         div .blogpost {
                             h2 .blogtitle { (blogpost.title) }
-                            span style="opacity: 0.7;" { (blogpost.date.format("%d-%m-%Y")) }
+                            span style="opacity: 0.7;" {
+                                (blogpost.date.format("%a %d %b %Y"))
+                                // 200 words per minute estimate
+                                (format!(" - {} min read", blogpost.estimated_read_time))
+                            }
                             br;
                             p {
-                                (PreEscaped(blogpost.content.to_string()))
+                                (PreEscaped(&blogpost.content))
                             }
                         }
 
-                        em { (format!("tags: {}", blogpost.tags.join(", "))) }
+                        em { (format!("tags: [{}]", blogpost.tags.join(", "))) }
                     }
                 }
 

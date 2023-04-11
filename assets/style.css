@@ -1,15 +1,18 @@
 * {
-margin: 0;
-    --tc: #181818;
-    --bc: #fefefe;
-    --hc: #5d61fc;
+    margin: 0;
+}
+
+:root {
+    --tc: #1f1f1f;
+    --bc: #ffe8c3;
+    --hc: #2c2c77;
 }
 
 @media (prefers-color-scheme: dark) {
-    * {
-        --tc: #fefefe;
-        --bc: #181818;
-        --hc: #ffdd33;
+    :root {
+        --tc: #ffe8c3;
+        --bc: #1f1f1f;
+        --hc: #ffa3c3;
     }
 }
 
@@ -25,7 +28,7 @@ body {
 }
 
 main {
-    margin-bottom: 3em;
+    margin-bottom: 3rem;
 }
 
 a {
@@ -39,22 +42,25 @@ a:hover {
 
 h1,
 h2,
-br,
 header,
-ul {
-    margin-bottom: 0.6em;
+ul,
+p,
+code,
+pre {
+    margin-bottom: 1rem;
 }
 
 ul {
     padding-left: 1em;
 }
 
-br {
-content: " ";
+br::before {
+    content: " ";
     display: block;
 }
 
 /* navigation */
+
 section,
 section:target~section:last-of-type {
     display: none;
@@ -73,7 +79,7 @@ header {
     align-items: center;
 }
 
-header>a {
+header > a {
     font-size: 1.7em;
     font-weight: 700;
 }
@@ -83,7 +89,7 @@ nav a {
 }
 
 div {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
 }
 
 div.blogpost img {
@@ -91,42 +97,38 @@ div.blogpost img {
 }
 
 hr {
-    margin-top: 0.5em;
-    margin-bottom: 1em;
-}
-
-/* TODO: fix inline code style */
-
-pre {
-    font-size: 0.8em;
-    margin-bottom: 0.6em;
-    padding: 0.6em;
-    border-radius: 4px;
-    overflow: auto;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 code {
-    background-color: #2d2d2d;
-    color: #fefefe;
-    padding: 0.1em;
+    padding: 0 0.2em;
     border-radius: 2px;
+    background-color: #2d2d2d;
+    color: #d3d0c8;
+    font-family: 'Fira Code', monospace;
+    word-break: break-word;
 }
 
-/* inline code */
-p code {
+pre {
+    display: block;
+    border-radius: 2px;
+    padding: 0.6em;
+    padding-right: 0.6em;
     font-size: 0.9em;
+    overflow: auto;
 }
 
-input, textarea, button {
-   font-family: inherit;
-   font-size: inherit;
+pre code {
+    padding: 0;
+    border-radius: 0;
 }
 
-.go-icon {
-    width: 1em;
-    height: 1.4em;
-    vertical-align: middle;
-    margin-bottom: 0.2em;
+input,
+textarea,
+button {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .rss-icon {
@@ -138,12 +140,14 @@ div.blogpost li p {
     margin-bottom: 0;
 }
 
-div.blogpost h2, div.blogpost h3 {
+div.blogpost h2,
+div.blogpost h3 {
     margin-bottom: 0;
 }
 
-div.blogpost p, div.blogpost li {
-    margin-bottom: 0.6em;
+div.blogpost p,
+div.blogpost li {
+    margin-bottom: 1rem;
 }
 
 div.blogpost ul {
@@ -156,5 +160,16 @@ div.blogpost ul {
 
 footer {
     text-align: center;
-    margin-bottom: 3em;
+    margin-bottom: 3rem;
+}
+
+blockquote {
+    margin: 1rem 0;
+    padding: 0.1rem 0.8em;
+    border-left: 4px solid var(--hc);
+    font-style: italic;
+}
+
+blockquote p {
+    margin: 0.5em 0;
 }

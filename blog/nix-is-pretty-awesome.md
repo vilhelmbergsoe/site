@@ -90,8 +90,8 @@ vb@buckbeak:~]$
 ```
 
 Under `share`, we find the typical `/usr/share` entries for man pages and such.
-
-Under `bin`, we actually find the binary `hello`, and we can execute it just fine:
+Under `bin`, we actually find the binary `hello`, and we can execute it just
+fine:
 
 ```console
 [vb@buckbeak:~]$ /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1/bin/hello 

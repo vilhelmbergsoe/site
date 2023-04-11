@@ -7,9 +7,11 @@ use nom::{
     sequence::delimited,
     IResult,
 };
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
+use tokio::time::Instant;
 use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt};
 
 use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
@@ -69,6 +71,7 @@ pub struct BlogPost {
     archived: bool,
     tags: Vec<String>,
     content: String,
+    estimated_read_time: usize,
 }
 
 #[derive(Clone)]
@@ -126,6 +129,7 @@ fn parse_blog(
         archived: frontmatter.archived,
         tags: frontmatter.tags,
         content: html,
+        estimated_read_time: content.split_whitespace().count() / 200,
     })
 }
 
@@ -142,8 +146,24 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
         let entry = entry?;
         let path = entry.path();
         if path.is_file() {
+            // check for invalid file extensions
+            let ext = path.extension();
+            if ext != Some(std::ffi::OsStr::new("md"))
+                && ext != Some(std::ffi::OsStr::new("markdown"))
+                || ext.is_none()
+            {
+                tracing::warn!("skipping non markdown file: {}", path.display());
+                continue;
+            }
+
             if let Some(stem) = path.file_stem() {
                 let url = stem.to_str().unwrap();
+
+                // check if blogpost exists with same url
+                if blogposts.par_iter().any(|b| b.url == url) {
+                    tracing::warn!("skipping duplicate blogpost: {}", url);
+                    continue;
+                }
 
                 // TODO: implement own theme
                 let adapter = SyntectAdapter::new("base16-eighties.dark");
@@ -152,9 +172,12 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
 
                 plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
+                let start_time = Instant::now();
                 let blogpost = parse_blog(url, &path, &options, &plugins)?;
+                let elapsed = start_time.elapsed().as_millis();
+
                 blogposts.push(blogpost);
-                tracing::info!("loaded blogpost - {}", url);
+                tracing::info!("loaded blogpost - {} in {} ms", url, elapsed);
             }
         }
     }

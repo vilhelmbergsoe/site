@@ -7,13 +7,13 @@ tags: [go, website, blog]
 
 ## NOTICE
 
-_This post is very outdated. The entire site has been ported to rust and the new
-codebase is [here](https://github.com/vilhelmbergsoe/site). You can check out
-the old code [here](https://github.com/vilhelmbergsoe/sb)._
+>_This post is very outdated. The entire site has been ported to rust and the new
+>codebase is [here](https://github.com/vilhelmbergsoe/site). You can check out
+>the old code [here](https://github.com/vilhelmbergsoe/sb)._
 
 <br/>
 
-### The Beginning
+## The Beginning
 
 I've had a domain for a while now, but haven't got around to building a
 portfolio site until now.
@@ -28,7 +28,7 @@ posts.
 
 <br/>
 
-### The logistics
+## The logistics
 
 I wanted the website to be very minimal and found [this](https://minwiz.com/)
 nice template for a minimal responsive website.
@@ -49,7 +49,7 @@ I added markdown functionality and HTML sanitizing with
 
 <br/>
 
-### Usage
+## Usage
 
 The actual template is very easy to use. Example instructions are on the GitHub
 README [here](https://github.com/vilhelmbergsoe/sb/).

@@ -14,7 +14,7 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                     @for blogpost in &state.blogposts {
                         @if !blogpost.archived {
                             li {
-                                (blogpost.date.format("%d-%m-%Y")) " - "
+                                (blogpost.date.format("%d %m %Y")) " - "
                                 a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
                             }
                         }
@@ -32,9 +32,9 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 h2 { "Info" }
                 p { "Hi there! I'm a software developer, from Copenhagen,
                 Denmark, with a passion for technology and programming. I love
-                to find simple or elegant solutions to complex problems and I'm
+                to find simple and elegant solutions to complex problems and I'm
                 always eager to learn new things." }
-                br;
+
                 ul {
                     li {
                         a href="/assets/cv.pdf" { "CV" }
@@ -45,7 +45,6 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 }
 
                 h3 { "Projects" }
-                br;
                 ul {
                     li { a href="https://github.com/vilhelmbergsoe/asciicam" { "asciicam" } " - An ASCII webcam in your console" }
                     li { a href="https://github.com/vilhelmbergsoe/snake" { "snake" } " - A CLI snake clone" }
@@ -54,17 +53,15 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 }
 
                 h3 { "Skills" }
-                br;
                 ul {
-                    li { "Programming in Go" img .go-icon src="/assets/go.svg" alt="golang gopher"; ", Rust 🦀, C and JavaScript" }
-                    li { "Very experienced with Linux 🐧" }
-                    li { "Web development technologies: Docker, Git, HTML, CSS, SQL and React" }
-                    li { "Experience contributing to open source projects" }
-                    li { "Fast learner 📖" }
+                    li { "Programming in Go, Rust, C and JavaScript" }
+                    li { "6+ years experience with Linux 🐧" }
+                    li { "Knowledgable in Docker, Git, HTML, CSS, SQL and React" }
+                    li { "Contributed to open source projects" }
+                    li { "Fast learner" }
                 }
 
                 h3 { "Education" }
-                br;
                 ul {
                     li { "Niels Brock Innovationsgymnasiet 2021-2024" }
                 }
