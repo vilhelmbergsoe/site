@@ -42,6 +42,7 @@ a:hover {
 
 h1,
 h2,
+h3,
 header,
 ul,
 p,
@@ -69,6 +70,9 @@ section:target~section:last-of-type {
 section:target,
 section:last-of-type {
     display: inherit;
+
+    /* this is to prevent scrolling to the main section if the page is too large */
+    scroll-margin-top: 6em;
 }
 
 /* end navigation */
@@ -88,11 +92,7 @@ nav a {
     margin-left: 0.75em;
 }
 
-div {
-    margin-bottom: 1rem;
-}
-
-div.blogpost img {
+.blogpost img {
     width: 100%;
 }
 
@@ -136,26 +136,22 @@ button {
     vertical-align: middle;
 }
 
-div.blogpost li p {
+/* remove bottom margin from the bullet point headings */
+section#h h3 {
     margin-bottom: 0;
 }
 
-div.blogpost h2,
-div.blogpost h3 {
+/* first child of .blogpost li p show have no bottom margin:*/
+.blogpost li p:first-child {
     margin-bottom: 0;
 }
 
-div.blogpost p,
-div.blogpost li {
+.blogpost li p {
     margin-bottom: 1rem;
 }
 
-div.blogpost ul {
-    margin: 0 !important;
-}
-
 .blogtitle {
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
 }
 
 footer {

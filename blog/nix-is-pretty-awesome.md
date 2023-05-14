@@ -98,7 +98,7 @@ fine:
 Hello, world!
 ```
 
-### Nix as a development environment
+## Nix as a development environment
 
 One really cool use for Nix is its ability to create reproducible development
 environments.
