@@ -75,8 +75,8 @@ Here is an example path to GNU hello:
 Inside we find a `bin` and `share` directory, which each hold files associated
 with this derivation.
 
-```console
-[vb@buckbeak:~]$ tree -L 2 /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1
+``` sh
+$ tree -L 2 /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1
 /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1
 ├── bin
 │   └── hello
@@ -93,8 +93,8 @@ Under `share`, we find the typical `/usr/share` entries for man pages and such.
 Under `bin`, we actually find the binary `hello`, and we can execute it just
 fine:
 
-```console
-[vb@buckbeak:~]$ /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1/bin/hello 
+``` sh
+$ /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1/bin/hello 
 Hello, world!
 ```
 
@@ -217,10 +217,10 @@ development shell environments:
 
 If we then want to build the derivation, we can simply run:
 
-```console
-[vb@buckbeak:~/simple_c_example]$ nix build
-[vb@buckbeak:~/simple_c_example]$ # or
-[vb@buckbeak:~/simple_c_example]$ nix develop
+``` sh
+$ nix build
+$ # or
+$ nix develop
 ```
 
 which will build the project and create a shell with all dependencies in path,
@@ -231,8 +231,8 @@ and in it, there is a `bin` directory that contains our binary. The keen among
 you, you might have figured out that `result` is actually a symlink to the
 `/nix/store`.
 
-```console
-[vb@buckbeak:~/simple_c_example]$ ls -lah result
+``` sh
+$ ls -lah result
 lrwxrwxrwx 1 vb users 52 Apr  5 20:25 result -> /nix/store/3mjvzschwmxivpmhm54x43djja35mim3-simple_c
 ```
 
@@ -242,9 +242,9 @@ A really neat piece of software that works super well with Nix is
 With direnv installed and setup on your system, you can add the following to a
 `.envrc` file in your project root:
 
-```console
-[vb@buckbeak:~/simple_c_example]$ echo "use flake" >> .envrc
-[vb@buckbeak:~/simple_c_example]$ direnv allow
+``` sh
+$ echo "use flake" >> .envrc
+$ direnv allow
 ```
 
 This will automagically ✨ trigger the Nix shell and have your dependencies

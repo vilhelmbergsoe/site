@@ -5,13 +5,14 @@ archived: false
 tags: [go, website, blog]
 ---
 
-## NOTICE
+## IMPORTANT NOTICE
 
->_This post is very outdated. The entire site has been ported to rust and the new
->codebase is [here](https://github.com/vilhelmbergsoe/site). You can check out
->the old code [here](https://github.com/vilhelmbergsoe/sb)._
-
-<br/>
+>_This blog post is outdated. The website has been migrated to Rust, and the new
+>codebase can be found [here](https://github.com/vilhelmbergsoe/site). The old
+>code is still available [here](https://github.com/vilhelmbergsoe/sb)._
+>
+> Oh, and here is a blog post about the updated site: [New website
+> ⭐](/blog/new-website)
 
 ## The Beginning
 
@@ -25,8 +26,6 @@ Therefore, I decided to create [what you're looking at
 now](https://github.com/vilhelmbergsoe/sb/). A nice little personal website with
 blog functionality and an admin panel for creating, deleting and updating blog
 posts.
-
-<br/>
 
 ## The logistics
 
@@ -46,8 +45,6 @@ post](https://pace.dev/blog/2018/05/09/how-I-write-http-services-after-eight-yea
 I added markdown functionality and HTML sanitizing with
 [blackfriday](https://github.com/russross/blackfriday/) and
 [bluemonday](https://github.com/microcosm-cc/bluemonday) respectively.
-
-<br/>
 
 ## Usage
 

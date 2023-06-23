@@ -40,7 +40,7 @@ async fn main() -> Result<()> {
 
     tracing::info!("site root: {}", path_prefix.display());
 
-    let state = new_state(path_prefix).unwrap();
+    let state = new_state(path_prefix).await?;
 
     let app = Router::new()
         .route("/", get(root))
@@ -57,8 +57,7 @@ async fn main() -> Result<()> {
     tracing::info!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
-        .await
-        .unwrap();
+        .await?;
 
     Ok(())
 }
@@ -97,13 +96,14 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
     Ok((frontmatter, content))
 }
 
-fn parse_blog(
+async fn parse_blog(
     url: &str,
     path: &PathBuf,
     options: &ComrakOptions,
-    plugins: &ComrakPlugins,
+    plugins: &ComrakPlugins<'_>,
 ) -> Result<BlogPost, Report> {
-    let text = std::fs::read_to_string(path).unwrap();
+    let bytes = tokio::fs::read(path).await?;
+    let text = String::from_utf8_lossy(&bytes);
 
     let Ok((frontmatter, content)) = parse_frontmatter(&text) else {
         return Err(eyre!(format!(
@@ -133,17 +133,20 @@ fn parse_blog(
     })
 }
 
-fn new_state(path_prefix: &Path) -> Result<AppState> {
-    // Blog posts
+async fn new_state(path_prefix: &Path) -> Result<AppState> {
     let mut blogposts: Vec<BlogPost> = Vec::new();
 
-    let blog_dir = match std::fs::read_dir(path_prefix.join(Path::new("blog"))) {
+    let mut blog_dir = match tokio::fs::read_dir(path_prefix.join(Path::new("blog"))).await {
         Ok(dir) => dir,
         Err(err) => return Err(eyre!(format!("Error reading blog directory: {err}"))),
     };
 
-    for entry in blog_dir {
-        let entry = entry?;
+    // TODO: implement own theme
+    let adapter = SyntectAdapter::new("base16-eighties.dark");
+    let options = ComrakOptions::default();
+    let mut plugins = ComrakPlugins::default();
+
+    while let Some(entry) = blog_dir.next_entry().await? {
         let path = entry.path();
         if path.is_file() {
             // check for invalid file extensions
@@ -165,15 +168,10 @@ fn new_state(path_prefix: &Path) -> Result<AppState> {
                     continue;
                 }
 
-                // TODO: implement own theme
-                let adapter = SyntectAdapter::new("base16-eighties.dark");
-                let options = ComrakOptions::default();
-                let mut plugins = ComrakPlugins::default();
-
                 plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
                 let start_time = Instant::now();
-                let blogpost = parse_blog(url, &path, &options, &plugins)?;
+                let blogpost = parse_blog(url, &path, &options, &plugins).await?;
                 let elapsed = start_time.elapsed().as_millis();
 
                 blogposts.push(blogpost);

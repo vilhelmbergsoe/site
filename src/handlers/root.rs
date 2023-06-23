@@ -1,4 +1,5 @@
 use axum::{extract::State, response::IntoResponse};
+use chrono::Datelike;
 use maud::html;
 
 use crate::fragments::{footer, header};
@@ -55,7 +56,7 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 h3 { "Skills" }
                 ul {
                     li { "Programming in Go, Rust, C and JavaScript" }
-                    li { "6+ years experience with Linux 🐧" }
+                    li { ((chrono::Utc::now().year() - 2015).to_string()) "+ years experience with Linux 🐧" }
                     li { "Knowledgable in Docker, Git, HTML, CSS, SQL and React" }
                     li { "Contributed to open source projects" }
                     li { "Fast learner" }
