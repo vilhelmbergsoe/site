@@ -17,6 +17,8 @@ pub fn header(title: &str, description: &str) -> Markup {
 
         link rel="canonical" href="https://bergsoe.net/";
 
+        link rel="icon" href="data:,";
+
         header {
             a href="/#h" { "Vilhelm Bergsøe" }
             nav {

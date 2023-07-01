@@ -3,10 +3,12 @@
 }
 
 :root {
-    --tc: #1f1f1f;
-    --bc: #ffe8c3;
-    --hc: #2c2c77;
+    --tc: #000000;
+    --bc: #fefefe;
+    --hc: #4361ee;
 }
+
+
 
 @media (prefers-color-scheme: dark) {
     :root {
@@ -43,12 +45,31 @@ a:hover {
 h1,
 h2,
 h3,
+h4,
+h5,
+h6,
 header,
 ul,
 p,
 code,
 pre {
     margin-bottom: 1rem;
+}
+
+h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
+    display: inline-block;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-right: 5px;
+    text-decoration: none;
+}
+
+a.anchor:hover {
+    text-decoration: underline;
+}
+
+a.anchor::before {
+    content: "\00A7"; /* Section symbol (§) */
 }
 
 ul {
@@ -168,4 +189,18 @@ blockquote {
 
 blockquote p {
     margin: 0.5em 0;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+
+    /* border with same color as text */
+    border: 1px solid var(--tc);
+
+}
+
+table {
+    table-layout: auto;
+    /* width: 100%; */
 }

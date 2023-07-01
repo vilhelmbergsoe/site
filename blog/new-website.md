@@ -17,11 +17,12 @@ should clarify that performance and safety was not the primary concern with my
 original implementation in Go. In fact I love Go and the old codebase but
 there was a separate reason for my switch.
 
-The reason for my migration to Rust is... Nix! In my previous blog post, "Nix is
-pretty awesome❄️", I expressed my excitement with Nix as a development and
-deployment tool so naturally I wanted to deploy my site with Nix as well. There
-is, however, a problem with "nixifying" go applications as the hashing method
-used by Go for dependency management is fundamentally incompatible with Nix.
+The reason for migrating the site to Rust is... Nix! In my previous blog post,
+"Nix is pretty awesome ❄️", I expressed my excitement with Nix as a development
+and deployment tool so naturally I wanted to deploy my site with Nix as well.
+There is, however, a problem with "nixifying" go applications as the hashing
+method used by Go for dependency management is fundamentally incompatible with
+Nix.
 
 There is a way to get over this hurdle, by using a code generation tool like
 [gomod2nix](https://github.com/nix-community/gomod2nix). This, however, is a bit
@@ -331,6 +332,8 @@ pub async fn handle_blog (
                         em { (format!("tags: [{}]", blogpost.tags.join(", "))) }
                     }
                 }
+                
+                hr;
 
                 (footer())
             },
@@ -402,11 +405,11 @@ Here the template for the rss feed looks like this:
 ## Nix deployment
 
 As mentioned, the main drive behind my move from Rust is ease of deployment with
-Nix. So let's look into how it is done:
+Nix. So let's look into how that is done:
 
 In the project root we define a Nix flake `flake.nix`. Here I utilize the
 [crane](https://crane.dev/) library for building the project. Crane provides
-other niceties such as automatic source fetching and incremental builds.
+various niceties such as automatic source fetching and incremental builds.
 
 One problem you run into is having relative paths work correctly when the
 service is run from the nix store. There are probably many ways of solving this
@@ -421,7 +424,8 @@ let path_prefix = Path::new(&site_root);
 Here we load the environment variable if it exists and if it doesn't it just
 defaults to the current directory.
 
-In the Nix flake we then make sure to define this environment variable:
+In the Nix flake we then make sure to define this environment variable through a
+wrapper:
 
 ``` nix
 # ...
@@ -486,15 +490,15 @@ And that's it!
 
 # Conclusion
 
-Overall, it has been an awesome learning experience migrating my site to Rust +
-Nix and I hope it at least was an interesting read. I learned a lot about both
-Rust and Nix during this process.
+Overall, migrating my site to Rust + Nix has been an awesome learning experience
+and I hope this post was an interesting read. I learned a lot about both Rust
+and Nix during this process.
 
-If you're interested in looking at the full code you can find the code
+If you're interested in looking at the full code you can find the repository
 [here](https://github.com/vilhelmbergsoe/site).
 
-Also if you're interested in seeing the deployment code in it's entirety you can
-find it
+Also if you're interested in seeing the nixos configuration in it's entirety you
+can find it
 [here](https://github.com/vilhelmbergsoe/dotfiles/blob/master/hosts/clifton/modules/site.nix).
 
 Thanks for reading!

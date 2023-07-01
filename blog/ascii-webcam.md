@@ -5,6 +5,11 @@ archived: false
 tags: [rust, asciicam, ascii, webcam]
 ---
 
+![picture of my guitar in ASCII](/assets/pictures/ascii-guitar.webp)
+*picture of my guitar in ASCII*
+
+---
+
 [This](https://www.youtube.com/watch?v=QMYfkOtYYlg) video recently popped up in
 my recommended section, and it gave me a cool idea for a project.
 
@@ -79,3 +84,6 @@ worth it.
 
 You can check out the repository
 [here](https://github.com/vilhelmbergsoe/asciicam.git).
+
+
+[^1]: hey there

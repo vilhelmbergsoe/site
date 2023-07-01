@@ -24,17 +24,15 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
             }
             section #g {
                 h2 { "Contact" }
-                ul {
-                    li { "email me at " a href="mailto:vilhelm@bergsoe.net" { "vilhelm@bergsoe.net"} }
-                    li { "my " a href="/assets/gpg.txt" { "GPG key" } }
-                }
+                p { "email me at " a href="mailto:vilhelm@bergsoe.net" { "vilhelm@bergsoe.net"} }
+                p { "my " a href="/assets/gpg.txt" { "GPG key" } }
             }
             section #h {
                 h2 { "Info" }
                 p { "Hi there! I'm a software developer, from Copenhagen,
-                Denmark, with a passion for technology and programming. I love
-                to find simple and elegant solutions to complex problems and I'm
-                always eager to learn new things." }
+                Denmark, with an interest in technology, programming, music and
+                economics. I love to find simple and elegant solutions to
+                complex problems and I'm always eager to learn new things." }
 
                 ul {
                     li {
@@ -58,7 +56,7 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                     li { "Programming in Go, Rust, C and JavaScript" }
                     li { ((chrono::Utc::now().year() - 2015).to_string()) "+ years experience with Linux 🐧" }
                     li { "Knowledgable in Docker, Git, HTML, CSS, SQL and React" }
-                    li { "Contributed to open source projects" }
+                    li { "Contributes to open source" }
                     li { "Fast learner" }
                 }
 

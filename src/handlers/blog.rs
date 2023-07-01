@@ -41,7 +41,7 @@ pub async fn handle_blog(
                             }
                         }
 
-                        em { (format!("tags: [{}]", blogpost.tags.join(", "))) }
+                        em style="opacity: 0.7;" { (format!("tags: [{}]", blogpost.tags.join(", "))) }
                     }
                 }
 

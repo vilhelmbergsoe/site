@@ -1,7 +1,7 @@
 use axum::{routing::get, Router};
 use color_eyre::{eyre::eyre, eyre::Result, Report};
 use comrak::plugins::syntect::SyntectAdapter;
-use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins};
+use comrak::{markdown_to_html_with_plugins, ComrakExtensionOptions, ComrakOptions, ComrakPlugins};
 use nom::{
     bytes::complete::{tag, take_until},
     sequence::delimited,
@@ -143,8 +143,17 @@ async fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     // TODO: implement own theme
     let adapter = SyntectAdapter::new("base16-eighties.dark");
-    let options = ComrakOptions::default();
+    let mut options = ComrakOptions::default();
     let mut plugins = ComrakPlugins::default();
+
+    options.extension = ComrakExtensionOptions {
+        strikethrough: true,
+        table: true,
+        autolink: true,
+        footnotes: true,
+        header_ids: Some("".to_string()),
+        ..ComrakExtensionOptions::default()
+    };
 
     while let Some(entry) = blog_dir.next_entry().await? {
         let path = entry.path();
