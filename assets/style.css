@@ -58,10 +58,19 @@ pre {
 
 h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
     display: inline-block;
-    font-size: 0.8em;
+    font-size: 1.5rem;
     font-weight: bold;
     margin-right: 5px;
     text-decoration: none;
+    opacity: 0;
+    float: left;
+    margin-left: -1em;
+    margin-top: 0.2em;
+    line-height: 2rem;
+}
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+    opacity: 1;
 }
 
 a.anchor:hover {
@@ -69,7 +78,7 @@ a.anchor:hover {
 }
 
 a.anchor::before {
-    content: "\00A7"; /* Section symbol (§) */
+    content: "#";
 }
 
 ul {
@@ -123,26 +132,17 @@ hr {
 }
 
 code {
-    padding: 0 0.2em;
-    border-radius: 2px;
     background-color: #2d2d2d;
     color: #d3d0c8;
-    font-family: 'Fira Code', monospace;
     word-break: break-word;
 }
 
 pre {
     display: block;
-    border-radius: 2px;
+    border-radius: 3px;
     padding: 0.6em;
-    padding-right: 0.6em;
     font-size: 0.9em;
     overflow: auto;
-}
-
-pre code {
-    padding: 0;
-    border-radius: 0;
 }
 
 input,

@@ -11,8 +11,8 @@ tags: [go, website, blog]
 >codebase can be found [here](https://github.com/vilhelmbergsoe/site). The old
 >code is still available [here](https://github.com/vilhelmbergsoe/sb)._
 >
-> Oh, and here is a blog post about the updated site: [New website
-> ⭐](/blog/new-website)
+> Oh, and here is a blog post about the updated site: [Migrating my site to
+> Rust](/blog/new-website)
 
 ## The Beginning
 

@@ -7,35 +7,35 @@ tags: [nix, nixos, learning]
 
 ## Introduction
 
-I have known of Nix and NixOS for a while, and I've always found them both very
-neat. I even used NixOS in a pretty naive way on my Thinkpad x220, which works
-as my home server.
+I have known of Nix and NixOS for a while, and I've always found them very
+interesting. I even dabbed with NixOS in a rudamentary way on my Thinkpad x220,
+which I utilize as my home server.
 
-I would effectively manage most things very imperatively, which kind of defeats
-the purpose of using Nix in the first place. I had told myself I would do it the
-proper way once I started moving my desktops to NixOS.
+However, I was not leveraging Nix to its full potential, as I managed most
+aspects of my system in an imperative manner, negating the advantages offered by
+Nix.
 
-Recently my desktop drive went kapoot, and so I thought to myself, "This is the
-perfect opportunity to move to NixOS and get a proper config up and running"
-and so I did just that.
+Recently, my desktop drive went kapoot, which I viewed as the perfect
+opportunity to migrate to NixOS and get a proper and well-structured
+configuration up and running.
 
-This post is more a intro / quick showcase of what nix can do and how I use it.
-Not so much a detailed guide on learning Nix.
-
-For that I suggest you look at the bottom of the blog post for some learning
-resources to help you get started.
+This blog post primarily serves as an introduction and a quick showcase of what
+Nix can accomplish and how I use it. It does not aim to provide an exhaustive
+guide to learning Nix. For comprehensive learning resources, please refer to the
+end of this blog post.
 
 ## What is Nix?
 
 First off, what even is Nix?
 
-According to their [webpage](https://nixos.org), _"Nix is a tool that takes a
-unique approach to package management and system configuration."_
+As stated on their the official [Nix website](https://nixos.org), _"Nix is a
+tool that takes a unique approach to package management and system
+configuration."_
 
-This is a good one-line summary of what Nix is, but I'll try my best to get a
-bit more detailed here.
+While this is a good one-line summary of Nix, I will try and provide a more
+detailed explanation.
 
-When people refer to Nix, they usually really refer to one of three things:
+When people mention Nix, they typically refer to one of three things:
 
 - **Nix - the programming language**
 
@@ -55,9 +55,9 @@ When people refer to Nix, they usually really refer to one of three things:
   Nix programming language. It is designed to provide a consistent and
   reproducible system from one source of truth configuration.
 
-## Diving into Nix
+## Exploring Nix
 
-All packages, which are called **derivations** in Nix-land, are stored in the
+All packages, referred to as **derivations** in Nix-land, are stored in the
 `/nix/store`, which is an immutable, read-only directory that stores all of a
 system's derivations.
 
@@ -98,7 +98,7 @@ $ /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1/bin/hello
 Hello, world!
 ```
 
-## Nix as a development environment
+## Nix for Reproducible Development
 
 One really cool use for Nix is its ability to create reproducible development
 environments.
@@ -265,7 +265,7 @@ gives you a pretty good idea of how useful it is.
 
 Let's take a look at NixOS..
 
-## A look at NixOS
+## NixOS: Declarative System Configuration
 
 NixOS is really exciting because it takes the same principles of declarative
 structure of a project and applies it to your entire system.
@@ -292,7 +292,7 @@ users.users = {
     initialPassword = "nixos";
     isNormalUser = true;
     openssh.authorizedKeys.keys = [
-      "REDACTED"
+      "..."
     ];
     extraGroups = ["wheel" "networkmanager" "docker"];
 
@@ -352,7 +352,7 @@ Cargo.lock file and incremental building.
 
 It's really quite something 😁
 
-## Conclusion
+## Closing thoughts
 
 I have had a blast learning Nix for the past month, and I think this is an
 amazing tool. I have moved my entire desktop configuration to NixOS as well as

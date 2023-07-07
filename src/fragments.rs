@@ -32,7 +32,7 @@ pub fn header(title: &str, description: &str) -> Markup {
 pub fn footer() -> Markup {
     html! {
         footer {
-            "© 2023 " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" } ", Powered by " a href="https://nixos.org" { "Nix" } " ❄️"
+            "© 2023 " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
         }
     }
 }

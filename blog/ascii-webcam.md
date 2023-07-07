@@ -80,10 +80,5 @@ optimization techniques. I got to use cool tools in order to profile my
 applications and observed significant improvement in fps which makes my efforts
 worth it.
 
-<!-- It would be cool to have an image of something from the ASCIICAM tool here -->
-
 You can check out the repository
 [here](https://github.com/vilhelmbergsoe/asciicam.git).
-
-
-[^1]: hey there

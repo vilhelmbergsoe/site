@@ -1,5 +1,5 @@
 ---
-title: New website update ⭐
+title: Migrating my site to Rust
 date: 23-06-2023
 archived: false
 tags: [website, rust, nix, programming]
@@ -14,8 +14,8 @@ migrating my website to Rust and the implementation details in this blog post.
 
 First off, I should establish the motivation for the move from Go to Rust. I
 should clarify that performance and safety was not the primary concern with my
-original implementation in Go. In fact I love Go and the old codebase but
-there was a separate reason for my switch.
+original implementation in Go. In fact I like Go and the old codebase was just
+fine but there was a separate reason for my switch.
 
 The reason for migrating the site to Rust is... Nix! In my previous blog post,
 "Nix is pretty awesome ❄️", I expressed my excitement with Nix as a development
@@ -25,10 +25,10 @@ method used by Go for dependency management is fundamentally incompatible with
 Nix.
 
 There is a way to get over this hurdle, by using a code generation tool like
-[gomod2nix](https://github.com/nix-community/gomod2nix). This, however, is a bit
-of a pain and I'd rather not need to generate new Nix expressions everytime I
-update dependencies. Rust, however, doesn't have this problem and works
-exceptionally well with Nix.
+[gomod2nix](https://github.com/nix-community/gomod2nix). This, however, is a
+pain and I'd rather not need to generate new Nix expressions everytime I update
+dependencies. Rust, however, doesn't have this problem and works exceptionally
+well with Nix.
 
 For this reason, combined with my new interest in the Rust language I came to
 the conclusion that I wanted to rebuild my site in Rust, and maybe get more
@@ -107,7 +107,7 @@ In this struct, we have the following fields:
   post.
   
 This structure might not be as comprehensive a representation of a blog post as
-I'd have liked it to be. But it does the job for now 😀
+I'd have liked it to be. But it does the job for now.
 
 I decided to load and parse the blog posts at startup so as to minimize runtime
 overhead. This is all done in the `new_state()` function:
@@ -350,9 +350,9 @@ return the default blog page with the contents of the blog post integrated
 otherwise we pass control to the 404 Not Found handler.
 
 I'm aware that searching through a `Vec` isn't very efficient and I should look
-into using a `HashSet` og `HashMap` for the lookups the problem with this is sorting
-for dates isn't possible and I have yet to do benchmarks to find out which
-really has the biggest effect on performance.
+into using `HashSet` or `HashMap` for the lookups the problem with this is
+sorting for dates isn't possible and I have yet to do benchmarks to find out
+which really has the biggest effect on performance.
 
 The root endpoint looks kind of the same, with the only dynamic part being the
 list of blog posts:
