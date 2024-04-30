@@ -14,7 +14,7 @@
     :root {
         --tc: #ffe8c3;
         --bc: #1f1f1f;
-        --hc: #ffa3c3;
+        --hc: #8685ef;
     }
 }
 
@@ -50,8 +50,10 @@ h5,
 h6,
 header,
 ul,
+ol,
 p,
 code,
+img,
 pre {
     margin-bottom: 1rem;
 }
@@ -65,8 +67,12 @@ h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
     opacity: 0;
     float: left;
     margin-left: -1em;
-    margin-top: 0.2em;
+    /*margin-top: 0.2em;*/
     line-height: 2rem;
+}
+
+h1 a.anchor, h2 a.anchor {
+    margin-top: 0.2rem;
 }
 
 h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
@@ -124,6 +130,9 @@ nav a {
 
 .blogpost img {
     width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 hr {

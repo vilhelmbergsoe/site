@@ -10,7 +10,9 @@ build = "src/build.rs"
 axum = "0.6.12"
 chrono = "0.4.24"
 color-eyre = "0.6.2"
-comrak = "0.18.0"
+#comrak = "0.22.0"
+comrak = { git = "https://github.com/vilhelmbergsoe/comrak" }
+katex = "0.4.6"
 maud = { git = "https://github.com/lambda-fairy/maud", features = ["axum"] }
 nom = "7.1.3"
 rayon = "1.7.0"

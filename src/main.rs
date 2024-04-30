@@ -1,12 +1,16 @@
 use axum::{routing::get, Router};
 use color_eyre::{eyre::eyre, eyre::Result, Report};
 use comrak::plugins::syntect::SyntectAdapter;
-use comrak::{markdown_to_html_with_plugins, ComrakExtensionOptions, ComrakOptions, ComrakPlugins};
+use comrak::{markdown_to_html_with_plugins, Options, Plugins};
 use nom::{
+    branch::alt,
     bytes::complete::{tag, take_until},
+    combinator::{map, rest},
+    multi::many0,
     sequence::delimited,
     IResult,
 };
+
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -96,11 +100,56 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
     Ok((frontmatter, content))
 }
 
+#[derive(Debug)]
+struct MathExpr {
+    display_mode: bool,
+    expr: String,
+}
+
+fn math_expr(input: &str) -> IResult<&str, MathExpr> {
+    let (input, _) = tag("<span data-math-style=\"")(input)?;
+    let (input, style) = take_until("\">")(input)?;
+    let (input, _) = tag("\">")(input)?;
+    let (input, expression) = take_until("</span>")(input)?;
+    let (input, _) = tag("</span>")(input)?;
+    Ok((
+        input,
+        MathExpr {
+            display_mode: style == "display",
+            expr: expression.to_string(),
+        },
+    ))
+}
+
+fn non_math_expr(input: &str) -> IResult<&str, String> {
+    map(take_until("<span data-math-style=\""), |s: &str| {
+        s.to_string()
+    })(input)
+}
+
+fn parse_math_exprs(input: &str) -> IResult<&str, String> {
+    let (input, parsed) = many0(alt((
+        map(math_expr, |mathexpr| {
+            let opts = katex::Opts::builder()
+                .display_mode(mathexpr.display_mode)
+                .output_type(katex::opts::OutputType::Mathml)
+                .build()
+                .unwrap();
+            katex::render_with_opts(&mathexpr.expr, &opts).unwrap()
+        }),
+        non_math_expr,
+    )))(input)?;
+
+    let (input, remaining) = rest(input)?;
+
+    Ok((input, format!("{}{}", parsed.concat(), remaining)))
+}
+
 async fn parse_blog(
     url: &str,
     path: &PathBuf,
-    options: &ComrakOptions,
-    plugins: &ComrakPlugins<'_>,
+    options: &Options,
+    plugins: &Plugins<'_>,
 ) -> Result<BlogPost, Report> {
     let bytes = tokio::fs::read(path).await?;
     let text = String::from_utf8_lossy(&bytes);
@@ -108,7 +157,7 @@ async fn parse_blog(
     let Ok((frontmatter, content)) = parse_frontmatter(&text) else {
         return Err(eyre!(format!(
             "Error parsing frontmatter ({url}). Most likely missing delimiter \"---\\n\""
-        )))
+        )));
     };
 
     let frontmatter: Frontmatter = match serde_yaml::from_str(frontmatter) {
@@ -121,6 +170,16 @@ async fn parse_blog(
     let date: DateTime<Utc> = Utc.from_utc_datetime(&naive_datetime);
 
     let html = markdown_to_html_with_plugins(content, &options, &plugins);
+
+    // Parse all math expressions
+    let html = match parse_math_exprs(&html) {
+        Ok((_, parsed)) => parsed,
+        Err(err) => {
+            return Err(eyre!(format!(
+                "Error parsing math expressions for blog ({url}): {err}"
+            )));
+        }
+    };
 
     Ok(BlogPost {
         url: url.to_string(),
@@ -142,18 +201,17 @@ async fn new_state(path_prefix: &Path) -> Result<AppState> {
     };
 
     // TODO: implement own theme
-    let adapter = SyntectAdapter::new("base16-eighties.dark");
-    let mut options = ComrakOptions::default();
-    let mut plugins = ComrakPlugins::default();
+    let adapter = SyntectAdapter::new(Some("base16-eighties.dark"));
+    let mut options = Options::default();
+    let mut plugins = Plugins::default();
 
-    options.extension = ComrakExtensionOptions {
-        strikethrough: true,
-        table: true,
-        autolink: true,
-        footnotes: true,
-        header_ids: Some("".to_string()),
-        ..ComrakExtensionOptions::default()
-    };
+    options.extension.strikethrough = true;
+    options.extension.table = true;
+    options.extension.autolink = true;
+    options.extension.footnotes = true;
+    options.extension.header_ids = Some("".to_string());
+    options.extension.math_dollars = true;
+    options.render.unsafe_ = true;
 
     while let Some(entry) = blog_dir.next_entry().await? {
         let path = entry.path();
