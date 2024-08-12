@@ -28,4 +28,3 @@ ructe = "0.16.1"
 
 [profile.release]
 lto = true
-

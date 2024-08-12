@@ -24,7 +24,7 @@ image classification, recommendation systems, sequence modelling and other
 function approximation tasks.
 
 In this little blog post i'll be going over the basics of neural networks as
-well as a common optimisation algorithm used to train them.
+well as a common optimization algorithm used to train them.
 
 ## An introduction to Neural Networks
 
@@ -106,7 +106,7 @@ w = \begin{bmatrix}
 		   w_{n} \\
 	   \end{bmatrix}$$
 
-Here the whole notatoin for the weighted sum can be simplified to the
+Here the whole notation for the weighted sum can be simplified to the
 dot-product of the two vectors, where we then add the bias term and it is
 passed to the activation function.
 
@@ -231,7 +231,7 @@ propagation of the inputs through these data transformations until you get
 an output. Optimising or training these networks is harder but a nice
 algorithm called Backpropagation makes it easier to grasp.
 
-## Backpropagation and optimisation (training)
+## Backpropagation and optimization (training)
 
 Neural networks learn by "tuning" these weights based on an error
 calculation of the network's output with respect to the input. One of the
@@ -342,13 +342,13 @@ $$
 $$
 
 Now that we know how each parameter in our neural net influences the loss, we
-just need to figure out how to optimise our network to minimise the loss.
+just need to figure out how to optimize our network to minimise the loss.
 Luckily, there is a simple and effective way of doing that as we've already
 done the hard part.
 
-## Gradient descent and optimisation
+## Gradient descent and optimization
 
-The gradients we calculated are used in optimisation algorithms to adjust
+The gradients we calculated are used in optimization algorithms to adjust
 randomly initialised parameters, the weights and biases, in a neural network
 with the aim of minimising the loss function.
 

@@ -31,10 +31,10 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
             }
             section #h {
                 h2 { "Info" }
-                p { "Hi there! I'm a software developer, from Copenhagen,
-                Denmark 🇩🇰, with an interest in technology, programming, music
-                and economics. On this website, I showcase my various projects
-                and write about topics that relate to my interests." }
+		p { "Software Developer from Copenhagen, Denmark 🇩🇰,
+		with an interest in programming, economics and
+		mathematics. Check out my " a href="/#b" { "blog" } "
+		to read about what I'm working on."  }
 
                 ul {
                     li {
@@ -51,14 +51,20 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                     li { a href="https://github.com/vilhelmbergsoe/snake" { "snake" } " - A CLI snake clone" }
                     li { a href="https://github.com/vilhelmbergsoe/mazegen" { "mazegen" } " - A simple maze generator that uses recursive backtracking" }
                     li { a href="https://github.com/vilhelmbergsoe/site" { "site" } " - My personal website with blog functionality" }
+                    li { a href="https://github.com/vilhelmbergsoe/teenyfold" { "teenyfold" } " - (WIP) Protein folding / Structure prediction model" }
                 }
 
                 h3 { "Skills" }
                 ul {
-                    li { "Programming in Go, Rust, C and JavaScript" }
-                    li { ((chrono::Utc::now().year() - 2015).to_string()) "+ years experience with Linux 🐧" }
-                    li { "Knowledgable in Docker, Git, HTML, CSS, SQL and React" }
-                    li { "Contributes to open source" }
+                    li { b { "Programming Languages: " } br;
+			  "Go, Rust, C, JavaScript and more"
+		    }
+		    li { b { "Tools & Technologies: " } br;
+			  "Docker, Git, Linux (" ((chrono::Utc::now().year() - 2015).to_string()) "+ years 🐧), HTML, CSS, SQL, React, Nix"
+		    }
+		    li { b { "Currently learning: " } br;
+			 "ML & Data science, Biochemistry"
+		    }
                 }
 
                 h3 { "Education" }
