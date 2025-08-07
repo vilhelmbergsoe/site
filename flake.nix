@@ -29,9 +29,16 @@
         runTests = true;
       };
 
-      packages = {
+      packages = rec {
         site = cargoNix.rootCrate.build;
-        default = packages.site;
+	default = pkgs.symlinkJoin {
+	  inherit (site) name version;
+	  nativeBuildInputs = [pkgs.makeWrapper];
+	  paths = [site];
+	  postBuild = ''
+	      wrapProgram $out/bin/site --set-default SITE_ROOT ${./.}
+	  '';
+	};
       };
 
       devShells.default = pkgs.mkShell {
