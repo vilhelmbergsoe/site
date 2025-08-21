@@ -1,4 +1,5 @@
 use maud::{html, Markup, DOCTYPE};
+use chrono::Datelike;
 
 pub fn header(title: &str, description: &str) -> Markup {
     html! {
@@ -17,7 +18,8 @@ pub fn header(title: &str, description: &str) -> Markup {
 
         link rel="canonical" href="https://bergsoe.net/";
 
-        link rel="icon" href="data:,";
+        // link rel="icon" href="data:,";
+        link rel="icon" href="/assets/favicon.svg" type="image/svg+xml";
 
         header {
             a href="/#h" { "Vilhelm Bergsøe" }
@@ -32,7 +34,7 @@ pub fn header(title: &str, description: &str) -> Markup {
 pub fn footer() -> Markup {
     html! {
         footer {
-            "© 2023 " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
+            "© " (chrono::Utc::now().year().to_string()) " " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
         }
     }
 }

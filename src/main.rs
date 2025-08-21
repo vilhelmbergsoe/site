@@ -207,8 +207,7 @@ async fn new_state(path_prefix: &Path) -> Result<AppState> {
         Err(err) => return Err(eyre!(format!("Error reading blog directory: {err}"))),
     };
 
-    // TODO: implement own theme
-    let adapter = SyntectAdapter::new(Some("base16-eighties.dark"));
+    let adapter = SyntectAdapter::new(None);
     let mut options = Options::default();
     let mut plugins = Plugins::default();
 

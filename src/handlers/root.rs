@@ -33,15 +33,15 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 h2 { "Info" }
 		p { "Software Developer from Copenhagen, Denmark 🇩🇰,
 		with an interest in programming, economics and
-		mathematics. Check out my " a href="/#b" { "blog" } "
-		to read about what I'm working on."  }
+		mathematics. I occasionally write about these topics
+		and more on my " a href="/#b" { "blog" } "." }
 
                 ul {
                     li {
                         a href="/assets/cv.pdf" { "CV" }
                     }
                     li {
-                        a href="https://github.com/vilhelmbergsoe" { "GitHub" }
+                        span { a href="https://github.com/vilhelmbergsoe" { "GitHub" } " | " a href="https://codeberg.org/vilhelmbergsoe" { "Codeberg" } } 
                     }
                 }
 
@@ -54,10 +54,10 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                     li { a href="https://github.com/vilhelmbergsoe/teenyfold" { "teenyfold" } " - (WIP) Protein folding / Structure prediction model" }
                 }
 
-                h3 { "Skills" }
+                h3 { "Buzzwords" }
                 ul {
                     li { b { "Programming Languages: " } br;
-			  "Go, Rust, C, JavaScript and more"
+			"Go, Rust, C, Zig, JavaScript and more"
 		    }
 		    li { b { "Tools & Technologies: " } br;
 			  "Docker, Git, Linux (" ((chrono::Utc::now().year() - 2015).to_string()) "+ years 🐧), HTML, CSS, SQL, React, Nix"
@@ -68,8 +68,15 @@ pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
                 }
 
                 h3 { "Education" }
-                ul {
-                    li { "Niels Brock Innovationsgymnasiet 2021-2024" }
+                ul .split-list {
+                    li {
+                        span { "B.Sc. in Mathematics, University of Copenhagen" }
+                        span { i { "(2025 – Present)" } }
+                    }
+                    li {
+                        span { "Niels Brock Innovationsgymnasiet" }
+                        span { i { "(2021 – 2024)" } }
+                    }
                 }
             }
         }

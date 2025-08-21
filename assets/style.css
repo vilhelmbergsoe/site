@@ -3,18 +3,40 @@
 }
 
 :root {
-    --tc: #000000;
+    --tc: #141414;
     --bc: #fefefe;
+    --code-bc: #eeeeee;
+    --code-tc: #000000;
     --hc: #4361ee;
+
+    /* Syntax Highlighting - Light Theme */
+    --syntax-keyword: #8736c9;
+    --syntax-type: #008b94;
+    --syntax-function: #007acc;
+    --syntax-string: #c58600;
+    --syntax-comment: #58658c;
+    --syntax-number: #c95100;
+    --syntax-punctuation: #8736c9;
+    --syntax-variable: #000000;
 }
-
-
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --tc: #ffe8c3;
-        --bc: #1f1f1f;
+        --tc: #eeeeee;
+        --bc: #000000;
+        --code-bc: #141414;
+        --code-tc: #fefefe;
         --hc: #8685ef;
+
+        /* Syntax Highlighting - Dark Theme */
+        --syntax-keyword: #9E8CFC;
+        --syntax-type: #8AE8FF;
+        --syntax-function: #7DB8FF;
+        --syntax-string: #FFEF5C;
+        --syntax-comment: #808080;
+        --syntax-number: #FFCB47;
+        --syntax-punctuation: #9E8CFC;
+        --syntax-variable: #fefefe;
     }
 }
 
@@ -67,7 +89,6 @@ h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
     opacity: 0;
     float: left;
     margin-left: -1em;
-    /*margin-top: 0.2em;*/
     line-height: 2rem;
 }
 
@@ -106,8 +127,6 @@ section:target~section:last-of-type {
 section:target,
 section:last-of-type {
     display: inherit;
-
-    /* this is to prevent scrolling to the main section if the page is too large */
     scroll-margin-top: 6em;
 }
 
@@ -141,17 +160,27 @@ hr {
 }
 
 code {
-    background-color: #2d2d2d;
-    color: #d3d0c8;
     word-break: break-word;
+    background-color: var(--code-bc);
+    color: var(--code-tc);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
 }
 
 pre {
     display: block;
+    background-color: var(--code-bc) !important;
+    border: 1px solid var(--tc);
     border-radius: 3px;
-    padding: 0.6em;
+    padding: 1em;
     font-size: 0.9em;
     overflow: auto;
+}
+
+pre > code {
+    padding: 0;
+    background-color: transparent;
+    color: var(--code-tc);
 }
 
 input,
@@ -164,14 +193,13 @@ button {
 .rss-icon {
     height: 0.8em;
     vertical-align: middle;
+    margin-bottom: 0;
 }
 
-/* remove bottom margin from the bullet point headings */
 section#h h3 {
     margin-bottom: 0;
 }
 
-/* first child of .blogpost li p show have no bottom margin:*/
 .blogpost li p:first-child {
     margin-bottom: 0;
 }
@@ -203,13 +231,57 @@ blockquote p {
 table, th, td {
     border-collapse: collapse;
     margin-bottom: 1rem;
-
-    /* border with same color as text */
     border: 1px solid var(--tc);
 
 }
 
 table {
     table-layout: auto;
-    /* width: 100%; */
+}
+
+.split-list li {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* --- Syntax Highlighting --- */
+
+pre code .comment,
+pre code .punctuation.definition.comment {
+    color: var(--syntax-comment);
+    font-style: italic;
+}
+
+pre code .keyword,
+pre code .storage.modifier,
+pre code .storage.type.function {
+    color: var(--syntax-keyword);
+}
+
+pre code .storage.type,
+pre code .entity.name.type,
+pre code .entity.name.struct {
+    color: var(--syntax-type);
+}
+
+pre code .entity.name.function {
+    color: var(--syntax-function);
+}
+
+pre code .string {
+    color: var(--syntax-string);
+}
+
+pre code .constant.numeric,
+pre code .constant.language {
+    color: var(--syntax-number);
+}
+
+pre code .punctuation {
+    color: var(--syntax-punctuation);
+}
+
+pre code .variable {
+    color: var(--syntax-variable);
+    font-style: italic;
 }
