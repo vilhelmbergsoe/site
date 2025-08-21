@@ -20,10 +20,10 @@ use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::Subs
 
 use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
 
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::{services::ServeDir, services::ServeFile, trace::TraceLayer};
 
 pub mod handlers;
-use handlers::{handle_404, handle_blog, handle_tag, handle_rss, root};
+use handlers::{handle_404, handle_blog, handle_tag, handle_sitemap, handle_rss, root};
 
 pub mod fragments;
 
@@ -50,7 +50,9 @@ async fn main() -> Result<()> {
         .route("/", get(root))
         .route("/blog/:url", get(handle_blog))
         .route("/tag/:tag", get(handle_tag))
+        .route("/sitemap.xml", get(handle_sitemap))
         .route("/rss.xml", get(handle_rss))
+        .route_service("/robots.txt", ServeFile::new(path_prefix.join(Path::new("assets/robots.txt"))))
         .with_state(state)
         .nest_service(
             "/assets",

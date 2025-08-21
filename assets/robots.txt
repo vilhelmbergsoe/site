@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bergsoe.net/sitemap.xml
