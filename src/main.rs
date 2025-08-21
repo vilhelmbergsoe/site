@@ -135,7 +135,14 @@ fn parse_math_exprs(input: &str) -> IResult<&str, String> {
                 .output_type(katex::opts::OutputType::Mathml)
                 .build()
                 .unwrap();
-            katex::render_with_opts(&mathexpr.expr, &opts).unwrap()
+
+            // Decode HTML entities for katex
+            let decoded_expr = mathexpr.expr
+                .replace("&gt;", ">")
+                .replace("&lt;", "<")
+                .replace("&amp;", "&");
+
+            katex::render_with_opts(&decoded_expr, &opts).unwrap()
         }),
         non_math_expr,
     )))(input)?;
@@ -148,7 +155,7 @@ fn parse_math_exprs(input: &str) -> IResult<&str, String> {
 async fn parse_blog(
     url: &str,
     path: &PathBuf,
-    options: &Options,
+    options: &Options<'_>,
     plugins: &Plugins<'_>,
 ) -> Result<BlogPost, Report> {
     let bytes = tokio::fs::read(path).await?;
