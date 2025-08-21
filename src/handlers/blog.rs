@@ -41,7 +41,16 @@ pub async fn handle_blog(
                             }
                         }
 
-                        em style="opacity: 0.7;" { (format!("tags: [{}]", blogpost.tags.join(", "))) }
+                        div style="opacity: 0.7;" {
+                            "tags: ["
+                            @for (i, tag) in blogpost.tags.iter().enumerate() {
+                                @if i > 0 {
+                                    ", "
+                                }
+                                a href=(format!("/tag/{}", tag)) { (tag) }
+                            }
+                            "]"
+                        }
                     }
                 }
 

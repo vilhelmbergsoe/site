@@ -23,7 +23,7 @@ use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
 pub mod handlers;
-use handlers::{handle_404, handle_blog, handle_rss, root};
+use handlers::{handle_404, handle_blog, handle_tag, handle_rss, root};
 
 pub mod fragments;
 
@@ -49,6 +49,7 @@ async fn main() -> Result<()> {
     let app = Router::new()
         .route("/", get(root))
         .route("/blog/:url", get(handle_blog))
+        .route("/tag/:tag", get(handle_tag))
         .route("/rss.xml", get(handle_rss))
         .with_state(state)
         .nest_service(
