@@ -17,9 +17,17 @@ nix run
 
 `/blog/{url}` blog post page
 
+`/tag/{tag}` tagged posts page
+
 `/assets/{file}` static file serve directory
 
 `/rss.xml` rss feed
+
+`/sitemap.xml` sitemap
+
+`/robots.txt` robots.txt
+
+`/stats` uptime and post view counts
 
 ## License
 
