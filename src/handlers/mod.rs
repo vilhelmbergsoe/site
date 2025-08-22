@@ -4,6 +4,7 @@ mod tag;
 
 mod sitemap;
 mod rss_feed;
+mod stats;
 mod not_found;
 
 pub use blog::handle_blog;
@@ -12,3 +13,4 @@ pub use root::root;
 pub use rss_feed::handle_rss;
 pub use tag::handle_tag;
 pub use sitemap::handle_sitemap;
+pub use stats::handle_stats;

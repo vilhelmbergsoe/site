@@ -3,9 +3,9 @@ use chrono::Datelike;
 use maud::html;
 
 use crate::fragments::{footer, header};
-use crate::AppState;
+use crate::SharedState;
 
-pub async fn root(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
     html! {
         (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
         main {

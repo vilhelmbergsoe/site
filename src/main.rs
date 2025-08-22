@@ -13,9 +13,11 @@ use nom::{
 
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
+use std::collections::{HashMap, HashSet};
+use std::net::{IpAddr, SocketAddr};
 use std::path::{Path, PathBuf};
-use tokio::time::Instant;
+use std::sync::Arc;
+use tokio::{sync::RwLock, time::Instant};
 use tracing_subscriber::{prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt};
 
 use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
@@ -23,7 +25,9 @@ use chrono::{offset::TimeZone, DateTime, NaiveDate, Utc};
 use tower_http::{services::ServeDir, services::ServeFile, trace::TraceLayer};
 
 pub mod handlers;
-use handlers::{handle_404, handle_blog, handle_tag, handle_sitemap, handle_rss, root};
+use handlers::{
+    handle_404, handle_blog, handle_rss, handle_sitemap, handle_stats, handle_tag, root,
+};
 
 pub mod fragments;
 
@@ -50,10 +54,14 @@ async fn main() -> Result<()> {
         .route("/", get(root))
         .route("/blog/:url", get(handle_blog))
         .route("/tag/:tag", get(handle_tag))
+        .route("/stats", get(handle_stats))
         .route("/sitemap.xml", get(handle_sitemap))
         .route("/rss.xml", get(handle_rss))
-        .route_service("/robots.txt", ServeFile::new(path_prefix.join(Path::new("assets/robots.txt"))))
-        .with_state(state)
+        .route_service(
+            "/robots.txt",
+            ServeFile::new(path_prefix.join(Path::new("assets/robots.txt"))),
+        )
+        .with_state(state.into())
         .nest_service(
             "/assets",
             ServeDir::new(path_prefix.join(Path::new("assets"))),
@@ -63,7 +71,7 @@ async fn main() -> Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     tracing::info!("listening on {}", addr);
     axum::Server::bind(&addr)
-        .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
+        .serve(app.layer(TraceLayer::new_for_http()).into_make_service_with_connect_info::<SocketAddr>())
         .await?;
 
     Ok(())
@@ -80,10 +88,13 @@ pub struct BlogPost {
     estimated_read_time: usize,
 }
 
-#[derive(Clone)]
-pub struct AppState {
+pub struct State {
     blogposts: Vec<BlogPost>,
+    uptime: DateTime<Utc>,
+    total_views: RwLock<HashMap<String, HashSet<IpAddr>>>,
 }
+
+pub type SharedState = Arc<State>;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Frontmatter {
@@ -140,7 +151,8 @@ fn parse_math_exprs(input: &str) -> IResult<&str, String> {
                 .unwrap();
 
             // Decode HTML entities for katex
-            let decoded_expr = mathexpr.expr
+            let decoded_expr = mathexpr
+                .expr
                 .replace("&gt;", ">")
                 .replace("&lt;", "<")
                 .replace("&amp;", "&");
@@ -202,7 +214,7 @@ async fn parse_blog(
     })
 }
 
-async fn new_state(path_prefix: &Path) -> Result<AppState> {
+async fn new_state(path_prefix: &Path) -> Result<SharedState> {
     let mut blogposts: Vec<BlogPost> = Vec::new();
 
     let mut blog_dir = match tokio::fs::read_dir(path_prefix.join(Path::new("blog"))).await {
@@ -258,7 +270,11 @@ async fn new_state(path_prefix: &Path) -> Result<AppState> {
 
     blogposts.sort_by(|a, b| b.date.cmp(&a.date));
 
-    Ok(AppState { blogposts })
+    Ok(Arc::new(State {
+        blogposts,
+        uptime: chrono::Utc::now(),
+        total_views: RwLock::new(HashMap::new()),
+    }))
 }
 
 include!(concat!(env!("OUT_DIR"), "/templates.rs"));

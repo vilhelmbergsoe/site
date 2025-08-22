@@ -1,5 +1,7 @@
+use std::net::SocketAddr;
+
 use axum::{
-    extract::{Path, State},
+    extract::{ConnectInfo, Path, State},
     http::StatusCode,
     response::IntoResponse,
 };
@@ -7,56 +9,72 @@ use maud::{html, PreEscaped};
 
 use rayon::prelude::*;
 
-use crate::fragments::{footer, header};
 use crate::handle_404;
-
-use crate::AppState;
+use crate::{
+    fragments::{footer, header},
+    SharedState,
+};
 
 pub async fn handle_blog(
     Path(url): Path<String>,
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> impl IntoResponse {
     let blogpost = state
         .blogposts
         .par_iter()
         .find_first(|blogpost| blogpost.url == url);
 
-    match blogpost {
-        Some(blogpost) => (
-            StatusCode::OK,
-            html! {
-                (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Blog"))
-                main {
-                    section #h {
-                        div .blogpost {
-                            h2 .blogtitle { (blogpost.title) }
-                            span style="opacity: 0.7;" {
-                                (blogpost.date.format("%a %d %b %Y"))
-                                // 200 words per minute estimate
-                                (format!(" - {} min read", blogpost.estimated_read_time))
-                            }
-                            br;
-                            p {
-                                (PreEscaped(&blogpost.content))
-                            }
-                        }
+    if let Some(blogpost) = &blogpost {
+        let mut write_guard = state.total_views.write().await;
+        write_guard
+            .entry(blogpost.title.clone())
+            .or_default()
+            .insert(addr.ip());
+    }
 
-                        div style="opacity: 0.7;" {
-                            "tags: ["
-                            @for (i, tag) in blogpost.tags.iter().enumerate() {
-                                @if i > 0 {
-                                    ", "
+    match blogpost {
+        Some(blogpost) => {
+            let read_guard = state.total_views.read().await;
+            let total_views = read_guard
+                .get(&blogpost.title)
+                .map_or(0, |views_set| views_set.len());
+            (
+                StatusCode::OK,
+                html! {
+                    (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Blog"))
+                    main {
+                        section #h {
+                            div .blogpost {
+                                h2 .blogtitle { (blogpost.title) }
+                                span style="opacity: 0.7;" {
+                                    (blogpost.date.format("%a %d %b %Y"))
+                                    // 200 words per minute estimate
+                                    (format!(" - {} min read | {} view(s)" , blogpost.estimated_read_time, total_views))
                                 }
-                                a href=(format!("/tag/{}", tag)) { (tag) }
+                                br;
+                                p {
+                                    (PreEscaped(&blogpost.content))
+                                }
                             }
-                            "]"
+
+                            div {
+                                "tags: ["
+                                @for (i, tag) in blogpost.tags.iter().enumerate() {
+                                    @if i > 0 {
+                                        ", "
+                                    }
+                                    a href=(format!("/tag/{}", tag)) { (tag) }
+                                }
+                                "]"
+                            }
                         }
                     }
-                }
 
-                (footer())
-            },
-        ),
+                    (footer())
+                },
+            )
+        }
         None => handle_404().await,
     }
 }

@@ -3,9 +3,9 @@ use axum::{
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
 };
-use crate::AppState;
+use crate::SharedState;
 
-pub async fn handle_sitemap(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn handle_sitemap(State(state): State<SharedState>) -> impl IntoResponse {
     let mut sitemap = String::from(r#"<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"#);
 

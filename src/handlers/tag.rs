@@ -6,11 +6,11 @@ use maud::html;
 use rayon::prelude::*;
 
 use crate::fragments::{footer, header};
-use crate::AppState;
+use crate::SharedState;
 
 pub async fn handle_tag(
     Path(tag): Path<String>,
-    State(state): State<AppState>,
+    State(state): State<SharedState>,
 ) -> impl IntoResponse {
     let tagged_posts: Vec<_> = state
         .blogposts
