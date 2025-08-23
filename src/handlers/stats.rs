@@ -11,6 +11,12 @@ pub async fn handle_stats(State(state): State<SharedState>) -> impl IntoResponse
     let total_views: usize = read_guard.values().map(|views_set| views_set.len()).sum();
     let server_uptime = Utc::now() - state.uptime;
 
+    let mut sorted_stats: Vec<_> = read_guard
+        .iter()
+        .map(|(title, views_set)| (title, views_set.len()))
+        .collect();
+    sorted_stats.sort_by(|a, b| b.1.cmp(&a.1));
+
     html! {
         h1 { "Statistics" }
         p style="opacity: 0.7; font-size: 0.9em; margin-top: -1.5em;" {
@@ -21,9 +27,9 @@ pub async fn handle_stats(State(state): State<SharedState>) -> impl IntoResponse
             (total_views)
         }
         ul {
-            @for (title, views_set) in read_guard.iter() {
+            @for (title, views_count) in sorted_stats {
                 li {
-                    (title) ": " (views_set.len()) " view(s)"
+                    (title) ": " (views_count) " view(s)"
                 }
             }
         }
