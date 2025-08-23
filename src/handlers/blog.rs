@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{hash::{DefaultHasher, Hasher, Hash}, net::SocketAddr};
 
 use axum::{
     extract::{ConnectInfo, Path, State},
@@ -9,10 +9,11 @@ use maud::{html, PreEscaped};
 
 use rayon::prelude::*;
 
-use crate::handle_404;
 use crate::{
+    handle_404,
     fragments::{footer, header},
     SharedState,
+    UserId
 };
 
 pub async fn handle_blog(
@@ -26,11 +27,16 @@ pub async fn handle_blog(
         .find_first(|blogpost| blogpost.url == url);
 
     if let Some(blogpost) = &blogpost {
+        let mut hasher = DefaultHasher::new();
+        state.salt.hash(&mut hasher);
+        addr.ip().hash(&mut hasher);
+        let user_id: UserId = hasher.finish();
+
         let mut write_guard = state.total_views.write().await;
         write_guard
             .entry(blogpost.title.clone())
             .or_default()
-            .insert(addr.ip());
+            .insert(user_id);
     }
 
     match blogpost {

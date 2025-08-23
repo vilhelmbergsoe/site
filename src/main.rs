@@ -11,10 +11,11 @@ use nom::{
     IResult,
 };
 
+use rand::prelude::*;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::{sync::RwLock, time::Instant};
@@ -71,7 +72,10 @@ async fn main() -> Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     tracing::info!("listening on {}", addr);
     axum::Server::bind(&addr)
-        .serve(app.layer(TraceLayer::new_for_http()).into_make_service_with_connect_info::<SocketAddr>())
+        .serve(
+            app.layer(TraceLayer::new_for_http())
+                .into_make_service_with_connect_info::<SocketAddr>(),
+        )
         .await?;
 
     Ok(())
@@ -88,10 +92,13 @@ pub struct BlogPost {
     estimated_read_time: usize,
 }
 
+pub type UserId = u64;
+
 pub struct State {
     blogposts: Vec<BlogPost>,
     uptime: DateTime<Utc>,
-    total_views: RwLock<HashMap<String, HashSet<IpAddr>>>,
+    total_views: RwLock<HashMap<String, HashSet<UserId>>>,
+    salt: u64,
 }
 
 pub type SharedState = Arc<State>;
@@ -268,12 +275,16 @@ async fn new_state(path_prefix: &Path) -> Result<SharedState> {
         }
     }
 
+    let salt = rand::rng().random::<u64>();
+    tracing::info!("Generated server salt for this session");
+
     blogposts.sort_by(|a, b| b.date.cmp(&a.date));
 
     Ok(Arc::new(State {
         blogposts,
         uptime: chrono::Utc::now(),
         total_views: RwLock::new(HashMap::new()),
+        salt,
     }))
 }
 
