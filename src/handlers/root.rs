@@ -15,7 +15,7 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
                     @for blogpost in &state.blogposts {
                         @if !blogpost.archived {
                             li {
-                                (blogpost.date.format("D%d-%m-%Y "))
+                                span.blog-date { (blogpost.date.format("D%d-%m-%Y")) }
                                 a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
                             }
                         }

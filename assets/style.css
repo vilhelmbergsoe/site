@@ -196,6 +196,17 @@ button {
     margin-bottom: 0;
 }
 
+section#b li {
+    display: flex;
+}
+
+.blog-date {
+    font-family: monospace;
+
+    flex-shrink: 0;
+    margin-right: 0.5em;
+}
+
 section#h h3 {
     margin-bottom: 0;
 }
