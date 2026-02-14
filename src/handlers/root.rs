@@ -8,6 +8,12 @@ use crate::SharedState;
 pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
     html! {
         (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
+        div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;" {
+            a href="/babble/blog" { "My blog" }
+            a href="/babble/wp-login" { "Wordpress Login" }
+            a href="/babble/btc-wallet" { "Bitcoin Wallet" }
+        }
+
         main {
             section #b {
                 h2 { "Blog " a href="/rss.xml" title="RSS Feed" { img .rss-icon src="/assets/rss.png" alt="rss"; } }
