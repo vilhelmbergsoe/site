@@ -269,15 +269,26 @@ blockquote p {
     margin: 0.5em 0;
 }
 
-table, th, td {
+table {
     border-collapse: collapse;
     margin-bottom: 1rem;
-    border: 1px solid var(--tc);
-
+    width: 100%;
 }
 
-table {
-    table-layout: auto;
+th, td {
+    padding: 0.5em 1em;
+    text-align: left;
+    border-bottom: 1px solid color-mix(in srgb, var(--tc) 30%, transparent);
+}
+
+th {
+    font-weight: 600;
+    background: color-mix(in srgb, var(--tc) 8%, transparent);
+    border-bottom: 2px solid color-mix(in srgb, var(--tc) 65%, transparent);
+}
+
+tr:last-child td {
+    border-bottom: none;
 }
 
 .split-list li {
