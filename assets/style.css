@@ -18,6 +18,9 @@
     --syntax-number: #c95100;
     --syntax-punctuation: #8736c9;
     --syntax-variable: #000000;
+
+
+    --font-main: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,7 +44,8 @@
 }
 
 body {
-    font: 18px -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-main);
+    font-size: 18px;
     line-height: 1.4;
     color: var(--tc);
     background: var(--bc);
@@ -147,6 +151,38 @@ nav a {
     margin-left: 0.75em;
 }
 
+footer {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.signet-block {
+    display: inline-block;
+    text-align: center;
+    line-height: 1;
+}
+
+.signet-block hr {
+    margin: 0.5rem 0;
+    border: none;
+    border-top: 1px solid var(--tc);
+    opacity: 0.4;
+}
+
+.signet-block .signet {
+    height: 2.75em;
+    width: auto;
+    display: block;
+    margin: 0 auto 0;
+    opacity: 0.9;
+}
+
+@media (prefers-color-scheme: light) {
+    .signet-block .signet {
+        filter: invert(1);
+    }
+}
+
 .blogpost img {
     width: 100%;
     display: block;
@@ -201,8 +237,7 @@ section#b li {
 }
 
 .blog-date {
-    font-family: monospace;
-
+    font-variant-numeric: tabular-nums;
     flex-shrink: 0;
     margin-right: 0.5em;
 }
@@ -221,11 +256,6 @@ section#h h3 {
 
 .blogtitle {
     margin-bottom: 0;
-}
-
-footer {
-    text-align: center;
-    margin-bottom: 3rem;
 }
 
 blockquote {

@@ -34,7 +34,11 @@ pub fn header(title: &str, description: &str) -> Markup {
 pub fn footer() -> Markup {
     html! {
         footer {
-            "© " (chrono::Utc::now().year().to_string()) " " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
+            div.signet-block {
+                img.signet src="/assets/bergsoe.webp" alt="signet";
+                hr;
+                "© " (chrono::Utc::now().year().to_string()) " " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
+            }
         }
     }
 }
