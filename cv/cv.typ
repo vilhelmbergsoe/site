@@ -61,7 +61,6 @@
   [Email: #link("mailto:vilhelm@bergsoe.net")[vilhelm\@bergsoe.net]],
   [#link("https://github.com/vilhelmbergsoe")[GitHub: github.com/vilhelmbergsoe]], [],
 )
-#emph[Jack of All Trades (Master of some, I promise).]
 
 #section("Experience")
 
@@ -84,16 +83,11 @@
     )
 
     #block(above: 1.45em, below: 1.6em)[
-      Worked on gateway and authentication services, including caching and migrating GraphQL resolvers from TypeScript to Rust.
+      Most of my work has been on the backend and infrastructure side. I ported the core statistics pipeline and a number of GraphQL resolvers from TypeScript to Rust, and spent quite a bit of time on performance work around the gateway, authentication, and data processing.
 
       #v(0.55em)
-      Worked on the OEE data pipeline and related query/performance issues. Built and maintained parts of the Nix-based development and CI infrastructure, including tooling, build improvements, and observability.
+      I also built and maintained large parts our Nix-based development and CI infrastructure, including developer tooling, improving build times and observability.
     ]
-
-    #detail-list((
-      [*DevOps:* DevEx improvements, Nix orchestration, AWS.],
-      [*Backend:* Rust development, optimized application performance.],
-    ))
   ],
   [
     #heading(
@@ -101,13 +95,6 @@
       "In-Office",
       (("Developer Support (Part-time)", "Nov 2019 – Feb 2020"),),
     )
-
-    #block(above: 1.95em)[
-      #detail-list((
-        [*Professional Experience:* Gained hands-on experience in a professional development environment.],
-        [*Technologies Used:* Worked with ReactJS for front-end development, Git for version control, and Docker for containerization.],
-      ))
-    ]
   ],
 )
 
@@ -130,10 +117,8 @@
 
 #list(
   spacing: 1.4em,
-  [*Ascii Cam:* ASCII webcam for the console, implemented in Rust.],
-  [*Snake:* Command-line version of the classic Snake game, written in C.],
-  [*Mazegen:* Maze generator using recursive backtracking, developed in Zig.],
-  [*Personal Blog:* Website with integrated blog functionality, built with Rust.],
-  [*Teenyfold:* (WIP) Protein folding and structure prediction model.],
-  [*BrainyBishop:* (WIP) Chess engine written in Rust.],
+  [*thread:* My (very work-in-progress) native code debugger.],
+  [*nod:* Nix Observability Daemon which monitors builds, substitutions using Nix's structured JSON logs.],
+  [*brainybishop:* Simple little chess engine.],
+  [*asciicam:* ASCII webcam for the console.],
 )

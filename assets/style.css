@@ -246,8 +246,13 @@ button {
     margin-bottom: 0;
 }
 
-section#b li {
+section#b li,
+.writing-list li {
     display: flex;
+}
+
+.writing-list {
+    margin-bottom: 0.5rem;
 }
 
 .blog-date {

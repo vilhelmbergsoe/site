@@ -15,7 +15,9 @@ nix run
 
 `/` home page
 
-`/blog/{url}` blog post page
+`/archive/` writing archive
+
+`/archive/{url}` writing page
 
 `/tag/{tag}` tagged posts page
 

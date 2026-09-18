@@ -27,7 +27,8 @@ use tower_http::{services::ServeDir, services::ServeFile, trace::TraceLayer};
 
 pub mod handlers;
 use handlers::{
-    handle_404, handle_blog, handle_cv, handle_rss, handle_sitemap, handle_stats, handle_tag, root,
+    handle_404, handle_archive, handle_blog, handle_cv, handle_rss, handle_sitemap, handle_stats,
+    handle_tag, redirect_legacy_blog, root,
 };
 
 pub mod fragments;
@@ -53,7 +54,9 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(root))
-        .route("/blog/:url", get(handle_blog))
+        .route("/archive/", get(handle_archive))
+        .route("/archive/:url", get(handle_blog))
+        .route("/blog/:url", get(redirect_legacy_blog))
         .route("/tag/:tag", get(handle_tag))
         .route("/stats", get(handle_stats))
         .route("/cv.pdf", get(handle_cv))

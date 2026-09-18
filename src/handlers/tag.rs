@@ -27,8 +27,8 @@ pub async fn handle_tag(
                 ul {
                     @for blogpost in &tagged_posts {
                         li {
-                            span.blog-date { (blogpost.date.format("D%d-%m-%Y")) }
-                            a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
+                            span.blog-date { (blogpost.date.format("%Y-%m-%d")) }
+                            a href=(format!("/archive/{}", blogpost.url)) { (blogpost.title) }
                         }
                     }
                 }

@@ -24,7 +24,7 @@ pub fn header(title: &str, description: &str) -> Markup {
         header {
             a href="/#h" { "Vilhelm Bergsøe" }
             nav {
-                a href="/#b" { "Blog" }
+                a href="/archive/" { "Archive" }
                 a href="/#g" { "Contact" }
             }
         }

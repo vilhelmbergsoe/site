@@ -13,15 +13,18 @@ pub async fn handle_sitemap(State(state): State<SharedState>) -> impl IntoRespon
     sitemap.push_str(r#"
     <url>
         <loc>https://bergsoe.net/</loc>
+    </url>
+    <url>
+        <loc>https://bergsoe.net/archive/</loc>
     </url>"#);
 
-    // Add blog posts
+    // Add published writing
     for post in &state.blogposts {
         if !post.archived {
             let url = format!(
                 r#"
     <url>
-        <loc>https://bergsoe.net/blog/{}</loc>
+        <loc>https://bergsoe.net/archive/{}</loc>
         <lastmod>{}</lastmod>
     </url>"#,
                 post.url,

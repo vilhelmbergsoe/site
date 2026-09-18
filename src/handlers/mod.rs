@@ -1,4 +1,5 @@
 mod root;
+mod archive;
 mod blog;
 mod cv;
 mod tag;
@@ -8,7 +9,8 @@ mod rss_feed;
 mod stats;
 mod not_found;
 
-pub use blog::handle_blog;
+pub use archive::handle_archive;
+pub use blog::{handle_blog, redirect_legacy_blog};
 pub use cv::handle_cv;
 pub use not_found::handle_404;
 pub use root::root;

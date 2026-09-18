@@ -2,8 +2,8 @@ use std::{hash::{DefaultHasher, Hasher, Hash}, net::SocketAddr};
 
 use axum::{
     extract::{ConnectInfo, Path, State},
-    http::StatusCode,
-    response::IntoResponse,
+    http::{HeaderValue, StatusCode},
+    response::{IntoResponse, Redirect},
 };
 use maud::{html, PreEscaped};
 
@@ -15,6 +15,20 @@ use crate::{
     SharedState,
     UserId
 };
+
+pub async fn redirect_legacy_blog(Path(url): Path<String>) -> Result<Redirect, StatusCode> {
+    assert!(!url.is_empty());
+    assert!(!url.starts_with('/'));
+
+    let destination = format!("/archive/{url}");
+    if HeaderValue::try_from(destination.as_str()).is_err() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
+    assert!(destination.starts_with("/archive/"));
+    assert!(destination.len() > "/archive/".len());
+    Ok(Redirect::permanent(&destination))
+}
 
 pub async fn handle_blog(
     Path(url): Path<String>,
@@ -48,7 +62,7 @@ pub async fn handle_blog(
             (
                 StatusCode::OK,
                 html! {
-                    (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Blog"))
+                    (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Writing"))
                     main {
                         section #h {
                             div .blogpost {

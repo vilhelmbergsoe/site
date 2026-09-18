@@ -12,7 +12,7 @@ tags: [go, website, blog]
 >code is still available [here](https://github.com/vilhelmbergsoe/sb)._
 >
 > Oh, and here is a blog post about the updated site: [Migrating my site to
-> Rust](/blog/new-website)
+> Rust](/archive/new-website)
 
 ## The Beginning
 

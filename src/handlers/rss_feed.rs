@@ -10,7 +10,13 @@ use crate::{templates, SharedState};
 pub async fn handle_rss(State(state): State<SharedState>) -> impl IntoResponse {
     let mut buf = Vec::new();
 
-    templates::rss_feed_xml(&mut buf, state.blogposts.clone()).unwrap();
+    let published_posts = state
+        .blogposts
+        .iter()
+        .filter(|post| !post.archived)
+        .cloned()
+        .collect();
+    templates::rss_feed_xml(&mut buf, published_posts).unwrap();
 
     Response::builder()
         .status(StatusCode::OK)

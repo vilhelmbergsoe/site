@@ -1,5 +1,4 @@
 use axum::{extract::State, response::IntoResponse};
-use chrono::Datelike;
 use maud::html;
 
 use crate::fragments::{footer, header};
@@ -7,7 +6,7 @@ use crate::SharedState;
 
 pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
     html! {
-        (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
+        (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and writing"))
         div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;" {
             a href="/babble/blog" { "My blog" }
             a href="/babble/wp-login" { "Wordpress Login" }
@@ -15,19 +14,6 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
         }
 
         main {
-            section #b {
-                h2 { "Blog " a href="/rss.xml" title="RSS Feed" { img .rss-icon src="/assets/rss.png" alt="rss"; } }
-                ul {
-                    @for blogpost in &state.blogposts {
-                        @if !blogpost.archived {
-                            li {
-                                span.blog-date { (blogpost.date.format("D%d-%m-%Y")) }
-                                a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
-                            }
-                        }
-                    }
-                }
-            }
             section #g {
                 h2 { "Contact" }
                 p { "email me at " a href="mailto:vilhelm@bergsoe.net" {"vilhelm@bergsoe.net"} br;
@@ -35,12 +21,10 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
                 }
 
             }
-            section #h {
-                h2 { "Info" }
-		p { "Software Developer from Copenhagen, Denmark 🇩🇰,
-		with an interest in programming, economics and
-		mathematics. I occasionally write about these topics
-		and more on my " a href="/#b" { "blog" } "." }
+            section #h { h2 { "Info" } p { "Software Developer and
+                mathematics student from Copenhagen. I'm interested in systems programming,
+                mathematics, economics and whatever else catches my
+                attention." }
 
                 ul {
                     li {
@@ -53,25 +37,22 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
 
                 h3 { "Projects" }
                 ul {
-                    li { a href="https://github.com/vilhelmbergsoe/asciicam" { "asciicam" } " - An ASCII webcam in your console" }
-                    li { a href="https://github.com/vilhelmbergsoe/snake" { "snake" } " - A CLI snake clone" }
-                    li { a href="https://github.com/vilhelmbergsoe/mazegen" { "mazegen" } " - A simple maze generator that uses recursive backtracking" }
-                    li { a href="https://github.com/vilhelmbergsoe/site" { "site" } " - My personal website with blog functionality" }
-                    li { a href="https://github.com/vilhelmbergsoe/teenyfold" { "teenyfold" } " - (WIP) Protein folding / Structure prediction model" }
+                    li { a href="https://tangled.org/bergsoe.net/thread" { "thread" } " - My (very in-progress) native code debugger." }
+                    li { a href="https://tangled.org/bergsoe.net/nod" { "nod" } " - Nix observability daemon for monitoring builds and substitutions." }
+                    li { a href="https://github.com/vilhelmbergsoe/brainybishop" { "brainybishop" } " - Simple little chess engine." }
                 }
 
-                h3 { "Buzzwords" }
-                ul {
-                    li { b { "Programming Languages: " } br;
-			"Go, Rust, C, Zig, JavaScript and more"
-		    }
-		    li { b { "Tools & Technologies: " } br;
-			  "Docker, Git, Linux (" ((chrono::Utc::now().year() - 2015).to_string()) "+ years 🐧), HTML, CSS, SQL, React, Nix"
-		    }
-		    li { b { "Currently learning: " } br;
-			 "ML & Data science, Biochemistry"
-		    }
+                h3 { "Writing" }
+                ul .writing-list {
+                    @for blogpost in state.blogposts.iter().filter(|blogpost| !blogpost.archived).take(3) {
+                        li {
+                            span.blog-date { (blogpost.date.format("%Y")) }
+                            a href=(format!("/archive/{}", blogpost.url)) { (blogpost.title) }
+                        }
+                    }
+                    li { "..." }
                 }
+                p { a href="/archive/" { "More →" } }
 
                 h3 { "Education" }
                 ul .split-list {
