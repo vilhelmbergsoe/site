@@ -1,55 +1,61 @@
----
-title: Migrating my site to Rust
-date: 23-06-2023
-archived: false
-tags: [website, rust, nix, programming]
----
+#let post = (
+  title: "Migrating my site to Rust",
+  date: datetime(year: 2023, month: 6, day: 23),
+  archived: false,
+  tags: ("website", "rust", "nix", "programming"),
+)
 
-In August of last year, I published a blog post titled "Creating my website",
-but since then, significant changes have been made in the implementation of my
-site and the blog post is outdated. I thought I would share the process of
-migrating my website to Rust and the implementation details in this blog post.
+#set document(title: post.title, date: post.date, keywords: post.tags)
+#metadata(post) <post-meta>
 
-# Background and Motivation
+In August of last year, I published a blog post titled "Creating my
+website", but since then, significant changes have been made in the
+implementation of my site and the blog post is outdated. I thought I
+would share the process of migrating my website to Rust and the
+implementation details in this blog post.
 
-First off, I should establish the motivation for the move from Go to Rust. I
-should clarify that performance and safety was not the primary concern with my
-original implementation in Go. In fact I like Go and the old codebase was just
-fine but there was a separate reason for my switch.
+= Background and Motivation
+<background-and-motivation>
+First off, I should establish the motivation for the move from Go to
+Rust. I should clarify that performance and safety was not the primary
+concern with my original implementation in Go. In fact I like Go and the
+old codebase was just fine but there was a separate reason for my
+switch.
 
-The reason for migrating the site to Rust is... Nix! In my previous blog post,
-"Nix is pretty awesome ❄️", I expressed my excitement with Nix as a development
-and deployment tool so naturally I wanted to deploy my site with Nix as well.
-There is, however, a problem with "nixifying" go applications as the hashing
-method used by Go for dependency management is fundamentally incompatible with
-Nix.
+The reason for migrating the site to Rust is… Nix! In my previous blog
+post, "Nix is pretty awesome ❄️", I expressed my excitement with Nix as
+a development and deployment tool so naturally I wanted to deploy my
+site with Nix as well. There is, however, a problem with "nixifying" go
+applications as the hashing method used by Go for dependency management
+is fundamentally incompatible with Nix.
 
-There is a way to get over this hurdle, by using a code generation tool like
-[gomod2nix](https://github.com/nix-community/gomod2nix). This, however, is a
-pain and I'd rather not need to generate new Nix expressions everytime I update
-dependencies. Rust, however, doesn't have this problem and works exceptionally
-well with Nix.
+There is a way to get over this hurdle, by using a code generation tool
+like #link("https://github.com/nix-community/gomod2nix")[gomod2nix];.
+This, however, is a pain and I'd rather not need to generate new Nix
+expressions everytime I update dependencies. Rust, however, doesn't have
+this problem and works exceptionally well with Nix.
 
-For this reason, combined with my new interest in the Rust language I came to
-the conclusion that I wanted to rebuild my site in Rust, and maybe get more
-comfortable with the language.
+For this reason, combined with my new interest in the Rust language I
+came to the conclusion that I wanted to rebuild my site in Rust, and
+maybe get more comfortable with the language.
 
-# Implementation
-
+= Implementation
+<implementation>
 At the time of rewriting my site, I discovered that
-[axum](https://github.com/tokio-rs/axum) recently had a major release and I
-heard good things about its seamless integration with the tokio runtime, so I
-decided to go with axum as my choice of web framework.
+#link("https://github.com/tokio-rs/axum")[axum] recently had a major
+release and I heard good things about its seamless integration with the
+tokio runtime, so I decided to go with axum as my choice of web
+framework.
 
-In line with my previous site, I required most of the same endpoints for my
-revamped version:
+In line with my previous site, I required most of the same endpoints for
+my revamped version:
 
 - The root or homepage, accessible via `/`
 - Individual blog posts, reachable through `/blog/{url}`
 - A directory for serving static files, located at `/assets`
 
-However, I took the opportunity to introduce a new feature: an RSS Feed endpoint
-accessible via `/rss.xml`.
+However, I took the opportunity to introduce a new feature: an RSS Feed
+endpoint accessible via `/rss.xml`.
 
 In axum, the routing for my webpage looks like the following:
 
@@ -68,10 +74,10 @@ let app = Router::new()
 
 So far everything looks pretty familiar.
 
-The `.with_state(state)` refers to the common state for all the endpoints. This
-state contains a `Vec` of `BlogPost`'s:
+The `.with_state(state)` refers to the common state for all the
+endpoints. This state contains a `Vec` of `BlogPost`'s:
 
-``` rust
+```rust
 pub struct AppState {
     blogposts: Vec<BlogPost>,
 }
@@ -98,19 +104,20 @@ In this struct, we have the following fields:
 - `title`: Holds the title of the blog post.
 - `date`: Represents the date and time when the blog post was created or
   published.
-- `archived`: A boolean value indicating whether the post should be displayed or
-  not.
-- `tags`: Contains a list of tags associated with the blog post, such as "rust"
-  or "nix".
-- `content`: Stores the parsed and processed HTML content of the blog post.
-- `estimated_read_time`: Provides a rough estimation of the read time for the
+- `archived`: A boolean value indicating whether the post should be
+  displayed or not.
+- `tags`: Contains a list of tags associated with the blog post, such as
+  "rust" or "nix".
+- `content`: Stores the parsed and processed HTML content of the blog
   post.
-  
-This structure might not be as comprehensive a representation of a blog post as
-I'd have liked it to be. But it does the job for now.
+- `estimated_read_time`: Provides a rough estimation of the read time
+  for the post.
 
-I decided to load and parse the blog posts at startup so as to minimize runtime
-overhead. This is all done in the `new_state()` function:
+This structure might not be as comprehensive a representation of a blog
+post as I'd have liked it to be. But it does the job for now.
+
+I decided to load and parse the blog posts at startup so as to minimize
+runtime overhead. This is all done in the `new_state()` function:
 
 ```rust
 async fn new_state(path_prefix: &Path) -> Result<AppState> {
@@ -178,8 +185,8 @@ async fn new_state(path_prefix: &Path) -> Result<AppState> {
 }
 ```
 
-This is quite boring though, and all the interesting stuff is happening in the
-call to `parse_blog()` which looks like this:
+This is quite boring though, and all the interesting stuff is happening
+in the call to `parse_blog()` which looks like this:
 
 ```rust
 async fn parse_blog(
@@ -233,12 +240,13 @@ async fn parse_blog(
 
 So let's dissect what's happening here.
 
-First, we're reading the contents of the file into `text`. Next we make a call
-to `parse_frontmatter()`, which is my dodgy frontmatter parser written using the
-parser combinator library [nom](https://docs.rs/nom/latest/nom/). The parsing
-logic itself is straightforward: It searches for a pair of delimiters "---" and
-extracts the text between them as the frontmatter. The remaining part of the
-file is considered the main content.
+First, we're reading the contents of the file into `text`. Next we make
+a call to `parse_frontmatter()`, which is my dodgy frontmatter parser
+written using the parser combinator library
+#link("https://docs.rs/nom/latest/nom/")[nom];. The parsing logic itself
+is straightforward: It searches for a pair of delimiters "---" and
+extracts the text between them as the frontmatter. The remaining part of
+the file is considered the main content.
 
 ```rust
 fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
@@ -253,8 +261,8 @@ fn parse_frontmatter(input: &str) -> IResult<&str, &str> {
 ```
 
 The frontmatter, which is just YAML code, is then parsed by
-[serde_yaml](https://docs.rs/serde_yaml/latest/serde_yaml/) into a nice
-`Frontmatter` struct:
+#link("https://docs.rs/serde_yaml/latest/serde_yaml/")[serde\_yaml] into
+a nice `Frontmatter` struct:
 
 ```rust
 struct Frontmatter {
@@ -265,15 +273,17 @@ struct Frontmatter {
 }
 ```
 
-After parsing the date from the string literal in the Frontmatter, we convert
-the markdown to html with the [comrak](https://docs.rs/comrak/latest/comrak/)
-markdown parser, using a nice one liner:
+After parsing the date from the string literal in the Frontmatter, we
+convert the markdown to html with the
+#link("https://docs.rs/comrak/latest/comrak/")[comrak] markdown parser,
+using a nice one liner:
 
 ```rust
 let html = markdown_to_html_with_plugins(content, &options, &plugins);
 ```
 
-Finally, we construct a `BlogPost` with all of the parsed data and return it:
+Finally, we construct a `BlogPost` with all of the parsed data and
+return it:
 
 ```rust
 Ok(BlogPost {
@@ -287,17 +297,18 @@ Ok(BlogPost {
 })
 ```
 
-## Handlers
-
-Now that we have an understanding of the project's structural skeleton, let's
-explore how we handle requests. The good news is that Axum makes this process
-remarkably simple and convenient.
+= Handlers
+<handlers>
+Now that we have an understanding of the project's structural skeleton,
+let's explore how we handle requests. The good news is that Axum makes
+this process remarkably simple and convenient.
 
 In conjunction with Axum, I've incorporated a template engine called
-[maud](https://maud.lambda.xyz/). Maud provides an `html!` macro that compiles
-pseudo HTML into efficient Rust code, resulting in exceptional performance. This
-combination of Axum and Maud enables seamless and efficient rendering of HTML
-responses for our web application.
+#link("https://maud.lambda.xyz/")[maud];. Maud provides an `html!` macro
+that compiles pseudo HTML into efficient Rust code, resulting in
+exceptional performance. This combination of Axum and Maud enables
+seamless and efficient rendering of HTML responses for our web
+application.
 
 ```rust
 pub async fn handle_blog (
@@ -345,17 +356,18 @@ pub async fn handle_blog (
 
 This is the entirety of the blog handler for the `/blog/{url}` endpoint.
 
-Essentially we find the first blog post that matches the url requested and
-return the default blog page with the contents of the blog post integrated
-otherwise we pass control to the 404 Not Found handler.
+Essentially we find the first blog post that matches the url requested
+and return the default blog page with the contents of the blog post
+integrated otherwise we pass control to the 404 Not Found handler.
 
-I'm aware that searching through a `Vec` isn't very efficient and I should look
-into using `HashSet` or `HashMap` for the lookups the problem with this is
-sorting for dates isn't possible and I have yet to do benchmarks to find out
-which really has the biggest effect on performance.
+I'm aware that searching through a `Vec` isn't very efficient and I
+should look into using `HashSet` or `HashMap` for the lookups the
+problem with this is sorting for dates isn't possible and I have yet to
+do benchmarks to find out which really has the biggest effect on
+performance.
 
-The root endpoint looks kind of the same, with the only dynamic part being the
-list of blog posts:
+The root endpoint looks kind of the same, with the only dynamic part
+being the list of blog posts:
 
 ```rust
 // ...
@@ -374,8 +386,8 @@ ul {
 ```
 
 For my RSS Feed endpoint I chose to go with the
-[ructe](https://docs.rs/ructe/latest/ructe/) template engine as maud doesn't
-have explicit support for XML.
+#link("https://docs.rs/ructe/latest/ructe/")[ructe] template engine as
+maud doesn't have explicit support for XML.
 
 Here the template for the rss feed looks like this:
 
@@ -402,32 +414,33 @@ Here the template for the rss feed looks like this:
 </rss>
 ```
 
-## Nix deployment
+= Nix deployment
+<nix-deployment>
+As mentioned, the main drive behind my move from Rust is ease of
+deployment with Nix. So let's look into how that is done:
 
-As mentioned, the main drive behind my move from Rust is ease of deployment with
-Nix. So let's look into how that is done:
+In the project root we define a Nix flake `flake.nix`. Here I utilize
+the #link("https://crane.dev/")[crane] library for building the project.
+Crane provides various niceties such as automatic source fetching and
+incremental builds.
 
-In the project root we define a Nix flake `flake.nix`. Here I utilize the
-[crane](https://crane.dev/) library for building the project. Crane provides
-various niceties such as automatic source fetching and incremental builds.
+One problem you run into is having relative paths work correctly when
+the service is run from the nix store. There are probably many ways of
+solving this problem, but I opted for an environment variable with the
+path to the project directory:
 
-One problem you run into is having relative paths work correctly when the
-service is run from the nix store. There are probably many ways of solving this
-problem, but I opted for an environment variable with the path to the project
-directory:
-
-``` rust
+```rust
 let site_root = std::env::var("SITE_ROOT").unwrap_or_else(|_| "./".to_string());
 let path_prefix = Path::new(&site_root);
 ```
 
-Here we load the environment variable if it exists and if it doesn't it just
-defaults to the current directory.
+Here we load the environment variable if it exists and if it doesn't it
+just defaults to the current directory.
 
-In the Nix flake we then make sure to define this environment variable through a
-wrapper:
+In the Nix flake we then make sure to define this environment variable
+through a wrapper:
 
-``` nix
+```nix
 # ...
 default = pkgs.symlinkJoin {
     inherit (site) name pname version;
@@ -442,7 +455,7 @@ default = pkgs.symlinkJoin {
 
 We can then build and run the project just fine with Nix:
 
-``` sh
+```sh
 $ nix run
 2023-05-17T09:20:16.398678Z  INFO site: site root: /nix/store/z04g8kmpmkvbf0kxf81aigjbx61b5i4q-40kgjvsccc7ny75r4wfd4gi98kp7l004-source
 2023-05-17T09:20:16.403586Z  INFO site: loaded blogpost - ascii-webcam in 0 ms
@@ -451,9 +464,10 @@ $ nix run
 2023-05-17T09:20:16.423409Z  INFO site: listening on 0.0.0.0:8080
 ```
 
-On my server I then use the following Nix module for serving the website:
+On my server I then use the following Nix module for serving the
+website:
 
-``` nix
+```nix
 {inputs, ...}: {
   systemd.services.site = {
     enable = true;
@@ -471,14 +485,14 @@ On my server I then use the following Nix module for serving the website:
 }
 ```
 
-Here we define a systemd service called `site` which uses the `site` input
-`github:vilhelmbergsoe/site` from the Nix flake.
+Here we define a systemd service called `site` which uses the `site`
+input `github:vilhelmbergsoe/site` from the Nix flake.
 
-Deployment is then as simple as importing the module in my host configuration
-and it runs!
+Deployment is then as simple as importing the module in my host
+configuration and it runs!
 
-If I have to update the site in the future all I have to do is push my changes
-and run
+If I have to update the site in the future all I have to do is push my
+changes and run
 
 ```sh
 $ nix flake lock --update-input site
@@ -488,17 +502,17 @@ $ sudo nixos-rebuild switch --flake .#clifton
 
 And that's it!
 
-# Conclusion
+= Conclusion
+<conclusion>
+Overall, migrating my site to Rust + Nix has been an awesome learning
+experience and I hope this post was an interesting read. I learned a lot
+about both Rust and Nix during this process.
 
-Overall, migrating my site to Rust + Nix has been an awesome learning experience
-and I hope this post was an interesting read. I learned a lot about both Rust
-and Nix during this process.
+If you're interested in looking at the full code you can find the
+repository #link("https://github.com/vilhelmbergsoe/site")[here];.
 
-If you're interested in looking at the full code you can find the repository
-[here](https://github.com/vilhelmbergsoe/site).
-
-Also if you're interested in seeing the nixos configuration in it's entirety you
-can find it
-[here](https://github.com/vilhelmbergsoe/dotfiles/blob/master/hosts/clifton/modules/site.nix).
+Also if you're interested in seeing the nixos configuration in it's
+entirety you can find it
+#link("https://github.com/vilhelmbergsoe/dotfiles/blob/master/hosts/clifton/modules/site.nix")[here];.
 
 Thanks for reading!

@@ -1,4 +1,7 @@
-use std::{hash::{DefaultHasher, Hasher, Hash}, net::SocketAddr};
+use std::{
+    hash::{DefaultHasher, Hash, Hasher},
+    net::SocketAddr,
+};
 
 use axum::{
     extract::{ConnectInfo, Path, State},
@@ -7,13 +10,9 @@ use axum::{
 };
 use maud::{html, PreEscaped};
 
-use rayon::prelude::*;
-
 use crate::{
-    handle_404,
     fragments::{footer, header},
-    SharedState,
-    UserId
+    handle_404, SharedState, UserId,
 };
 
 pub async fn redirect_legacy_blog(Path(url): Path<String>) -> Result<Redirect, StatusCode> {
@@ -35,10 +34,7 @@ pub async fn handle_blog(
     State(state): State<SharedState>,
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> impl IntoResponse {
-    let blogpost = state
-        .blogposts
-        .par_iter()
-        .find_first(|blogpost| blogpost.url == url);
+    let blogpost = state.blogposts.iter().find(|blogpost| blogpost.url == url);
 
     if let Some(blogpost) = &blogpost {
         let mut hasher = DefaultHasher::new();
@@ -73,9 +69,7 @@ pub async fn handle_blog(
                                     (format!(" - {} min read | {} view(s)" , blogpost.estimated_read_time, total_views))
                                 }
                                 br;
-                                p {
-                                    (PreEscaped(&blogpost.content))
-                                }
+                                (PreEscaped(&blogpost.content))
                             }
 
                             div {

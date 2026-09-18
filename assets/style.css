@@ -15,6 +15,14 @@
     src: url('/assets/fonts/source-serif-4-italic.woff2') format('woff2');
 }
 
+@font-face {
+    font-family: 'New Computer Modern Math';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/assets/fonts/new-cm-math-regular.otf') format('opentype');
+}
+
 * {
     margin: 0;
 }
@@ -58,6 +66,10 @@
         --syntax-punctuation: #9E8CFC;
         --syntax-variable: #fefefe;
     }
+
+    .diagram {
+        filter: invert(90%);
+    }
 }
 
 body {
@@ -74,6 +86,17 @@ body {
 
 main {
     margin-bottom: 3rem;
+}
+
+math {
+    color: inherit;
+    font-family: 'New Computer Modern Math', math;
+    font-size: 1.04em;
+}
+
+math[display="block"] {
+    margin: 1.35rem 0;
+    padding: 0.15rem 0;
 }
 
 a {
@@ -202,6 +225,10 @@ footer {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.blogpost img.narrow-diagram {
+    width: 50%;
 }
 
 hr {

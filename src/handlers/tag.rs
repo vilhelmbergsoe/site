@@ -1,12 +1,10 @@
+use crate::fragments::{footer, header};
+use crate::SharedState;
 use axum::{
     extract::{Path, State},
     response::IntoResponse,
 };
 use maud::html;
-use rayon::prelude::*;
-
-use crate::fragments::{footer, header};
-use crate::SharedState;
 
 pub async fn handle_tag(
     Path(tag): Path<String>,
@@ -14,9 +12,8 @@ pub async fn handle_tag(
 ) -> impl IntoResponse {
     let tagged_posts: Vec<_> = state
         .blogposts
-        .par_iter()
+        .iter()
         .filter(|p| !p.archived && p.tags.contains(&tag))
-        .cloned()
         .collect();
 
     html! {
