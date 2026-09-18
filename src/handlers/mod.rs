@@ -1,5 +1,6 @@
 mod root;
 mod blog;
+mod cv;
 mod tag;
 
 mod sitemap;
@@ -8,6 +9,7 @@ mod stats;
 mod not_found;
 
 pub use blog::handle_blog;
+pub use cv::handle_cv;
 pub use not_found::handle_404;
 pub use root::root;
 pub use rss_feed::handle_rss;

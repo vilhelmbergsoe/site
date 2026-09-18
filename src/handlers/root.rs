@@ -44,7 +44,7 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
 
                 ul {
                     li {
-                        a href="/assets/cv.pdf" { "CV" }
+                        a href="/cv.pdf" { "CV" }
                     }
                     li {
                         span { a href="https://tangled.org/bergsoe.net" { "Tangled" } " | " a href="https://codeberg.org/vilhelmbergsoe" { "Codeberg" } " | " a href="https://github.com/vilhelmbergsoe" { "GitHub" } } 
