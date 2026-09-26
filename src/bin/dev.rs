@@ -10,15 +10,7 @@ use std::{
 
 use notify::{Event, EventKind, RecursiveMode, Watcher};
 
-const WATCH_PATHS: &[&str] = &[
-    "src",
-    "blog",
-    "assets",
-    "cv",
-    "templates",
-    "Cargo.toml",
-    "Cargo.lock",
-];
+const WATCH_PATHS: &[&str] = &["src", "blog", "assets", "cv", "Cargo.toml", "Cargo.lock"];
 
 fn main() -> Result<(), Box<dyn Error>> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));

@@ -1,7 +1,9 @@
 use maud::{html, Markup, DOCTYPE};
-use chrono::Datelike;
 
 pub fn header(title: &str, description: &str) -> Markup {
+    assert!(!title.is_empty());
+    assert!(!description.is_empty());
+
     html! {
         (DOCTYPE)
 
@@ -37,7 +39,7 @@ pub fn footer() -> Markup {
             div.signet-block {
                 img.signet src="/assets/bergsoe.webp" alt="signet";
                 hr;
-                "© " (chrono::Utc::now().year().to_string()) " " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
+                "© 2026 " a href="https://github.com/vilhelmbergsoe" { "Vilhelm Bergsøe" }
             }
         }
     }

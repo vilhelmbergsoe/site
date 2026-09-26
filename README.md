@@ -21,7 +21,7 @@ nix run
 
 `/tag/{tag}` tagged posts page
 
-`/assets/{file}` static file serve directory
+`/assets/{file}` compile-time embedded static asset
 
 `/rss.xml` rss feed
 
@@ -29,7 +29,7 @@ nix run
 
 `/robots.txt` robots.txt
 
-`/stats` uptime and post view counts
+`/cv.pdf` curriculum vitae
 
 ## License
 

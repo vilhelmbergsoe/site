@@ -1,10 +1,12 @@
-use axum::{extract::State, response::IntoResponse};
-use maud::html;
+use maud::{html, Markup};
 
 use crate::fragments::{footer, header};
-use crate::SharedState;
+use crate::GENERATED_POSTS;
 
-pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
+pub async fn root() -> Markup {
+    assert!(!GENERATED_POSTS.is_empty());
+    assert!(GENERATED_POSTS.iter().all(|post| !post.url.is_empty()));
+
     html! {
         (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and writing"))
         div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;" {
@@ -31,7 +33,7 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
                         a href="/cv.pdf" { "CV" }
                     }
                     li {
-                        span { a href="https://tangled.org/bergsoe.net" { "Tangled" } " | " a href="https://codeberg.org/vilhelmbergsoe" { "Codeberg" } " | " a href="https://github.com/vilhelmbergsoe" { "GitHub" } } 
+                        span { a href="https://tangled.org/bergsoe.net" { "Tangled" } " | " a href="https://codeberg.org/vilhelmbergsoe" { "Codeberg" } " | " a href="https://github.com/vilhelmbergsoe" { "GitHub" } }
                     }
                 }
 
@@ -44,9 +46,9 @@ pub async fn root(State(state): State<SharedState>) -> impl IntoResponse {
 
                 h3 { "Writing" }
                 ul .writing-list {
-                    @for blogpost in state.blogposts.iter().filter(|blogpost| !blogpost.archived).take(3) {
+                    @for blogpost in GENERATED_POSTS.iter().filter(|blogpost| !blogpost.archived).take(3) {
                         li {
-                            span.blog-date { (blogpost.date.format("%Y")) }
+                            span.blog-date { (blogpost.date.0) }
                             a href=(format!("/archive/{}", blogpost.url)) { (blogpost.title) }
                         }
                     }

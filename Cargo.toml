@@ -3,7 +3,7 @@ name = "site"
 version = "0.1.0"
 edition = "2021"
 default-run = "site"
-build = "src/build.rs"
+build = "build/main.rs"
 
 [features]
 dev = ["dep:notify"]
@@ -16,24 +16,16 @@ required-features = ["dev"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.6.20"
-chrono = "0.4.41"
-color-eyre = "0.6.5"
+axum = { version = "0.6.20", default-features = false, features = ["http1", "tokio"] }
 maud = { version = "0.25.0", features = ["axum"] }
 notify = { version = "8.2.0", optional = true }
-rand = "0.9.2"
-tokio = { version = "1.47.1", features = ["full"] }
-tower-http = { version = "0.4.4", features = ["fs", "compression-br", "trace"] }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tokio = { version = "1.47.1", default-features = false, features = ["macros", "rt-multi-thread"] }
 
 [build-dependencies]
-ructe = "0.16.1"
+chrono = { version = "0.4.41", default-features = false, features = ["std"] }
 typst = "=0.15.1"
 typst-assets = { version = "=0.15.1", features = ["fonts"] }
 typst-html = "=0.15.1"
+typst-kit = { version = "=0.15.1", features = ["emit-diagnostics"] }
 typst-layout = "=0.15.1"
 typst-pdf = "=0.15.1"
-
-[profile.release]
-lto = true

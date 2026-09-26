@@ -1,6 +1,6 @@
 use std::{env, fs, io, path::PathBuf};
 
-const CV: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/cv.pdf"));
+const CV: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/site/cv.pdf"));
 
 fn main() -> io::Result<()> {
     assert!(CV.starts_with(b"%PDF-"));

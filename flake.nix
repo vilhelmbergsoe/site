@@ -28,20 +28,18 @@
         src = ./.;
       };
     in rec {
-      checks = cargoNix.rootCrate.build.override {
+      checks.site = cargoNix.rootCrate.build.override {
         runTests = true;
       };
 
       packages = rec {
         site = cargoNix.rootCrate.build;
-	default = pkgs.symlinkJoin {
-	  inherit (site) name version;
-	  nativeBuildInputs = [pkgs.makeWrapper];
-	  paths = [site];
-	  postBuild = ''
-	      wrapProgram $out/bin/site --set-default SITE_ROOT ${./.}
-	  '';
-	};
+        default = site;
+      };
+
+      apps.default = {
+        type = "app";
+        program = "${packages.site}/bin/site";
       };
 
       devShells.default = pkgs.mkShell {
