@@ -10,46 +10,7 @@ struct Asset {
     data: &'static [u8],
 }
 
-macro_rules! source_asset {
-    ($path:literal, $content_type:literal) => {
-        Asset {
-            path: $path,
-            content_type: $content_type,
-            data: include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/", $path)),
-        }
-    };
-}
-
-// Keeping this manifest explicit makes every public file visible to the compiler
-// and avoids a procedural macro, directory copy, and runtime MIME detection.
-static ASSETS: &[Asset] = &[
-    source_asset!("bergsoe.webp", "image/webp"),
-    Asset {
-        path: "cv.pdf",
-        content_type: "application/pdf",
-        data: include_bytes!(concat!(env!("OUT_DIR"), "/site/cv.pdf")),
-    },
-    source_asset!("favicon.svg", "image/svg+xml"),
-    Asset {
-        path: "fonts/new-cm-math-regular.otf",
-        content_type: "font/otf",
-        data: include_bytes!(concat!(
-            env!("OUT_DIR"),
-            "/site/fonts/new-cm-math-regular.otf"
-        )),
-    },
-    source_asset!("fonts/source-serif-4-italic.woff2", "font/woff2"),
-    source_asset!("fonts/source-serif-4.woff2", "font/woff2"),
-    source_asset!("gpg.txt", "text/plain; charset=utf-8"),
-    source_asset!("pictures/ascii-guitar.webp", "image/webp"),
-    source_asset!("pictures/neural_nets/multi_neuron.webp", "image/webp"),
-    source_asset!("pictures/neural_nets/neural_network.webp", "image/webp"),
-    source_asset!("pictures/neural_nets/nn_cost.webp", "image/webp"),
-    source_asset!("pictures/neural_nets/perceptron.webp", "image/webp"),
-    source_asset!("robots.txt", "text/plain; charset=utf-8"),
-    source_asset!("rss.png", "image/png"),
-    source_asset!("style.css", "text/css; charset=utf-8"),
-];
+include!(concat!(env!("OUT_DIR"), "/site/assets.rs"));
 
 pub async fn handle_asset(Path(path): Path<String>) -> Response {
     let response = serve_asset(&path);

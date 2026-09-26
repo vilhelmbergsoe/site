@@ -5,6 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+mod assets;
 mod compiler;
 mod documents;
 mod post;
@@ -17,20 +18,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_dir = PathBuf::from(env::var("OUT_DIR")?).join("site");
     let cv_source = manifest_dir.join("cv/cv.typ");
     let blog_dir = manifest_dir.join("blog");
+    let asset_dir = manifest_dir.join("assets");
 
     assert!(manifest_dir.is_absolute());
     assert!(output_dir.is_absolute());
 
     println!("cargo:rerun-if-changed={}", cv_source.display());
     println!("cargo:rerun-if-changed={}", blog_dir.display());
+    println!("cargo:rerun-if-changed={}", asset_dir.display());
     prepare_output(&output_dir)?;
 
     // Font discovery is expensive, so every Typst document shares one compiler.
     let compiler = Compiler::new();
     documents::compile_cv(&compiler, &cv_source, &output_dir.join("cv.pdf"))?;
     documents::write_math_font(&compiler, &output_dir.join("fonts/new-cm-math-regular.otf"))?;
+    assets::generate(&asset_dir, &output_dir.join("assets.rs"))?;
     posts::compile(&compiler, &blog_dir, &output_dir)?;
 
+    assert!(output_dir.join("assets.rs").is_file());
     assert!(output_dir.join("cv.pdf").is_file());
     assert!(output_dir.join("posts.rs").is_file());
     assert!(output_dir.join("posts").is_dir());

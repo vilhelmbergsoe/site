@@ -20,13 +20,13 @@ fn render_rss(posts: &[GeneratedPost]) -> String {
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n\
 <rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n\
     <channel>\n\
-        <title>Vilhelm Bergsøe&apos;s Writing</title>\n\
-        <link>https://bergsoe.net/archive/</link>\n\
-        <description>Vilhelm Bergsøe&apos;s writing feed</description>\n",
+        <title>Vilhelm Bergsøe&apos;s Blog</title>\n\
+        <link>https://bergsoe.net/blog/</link>\n\
+        <description>Vilhelm Bergsøe&apos;s blog feed</description>\n",
     );
 
     for post in posts.iter().filter(|post| !post.archived) {
-        let url = format!("https://bergsoe.net/archive/{}", post.url);
+        let url = format!("https://bergsoe.net/blog/{}", post.url);
         let tags = post.tags.join(", ");
         writeln!(
             feed,

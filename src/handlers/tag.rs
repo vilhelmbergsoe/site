@@ -24,7 +24,7 @@ pub async fn handle_tag(Path(tag): Path<String>) -> Markup {
                     @for blogpost in &tagged_posts {
                         li {
                             span.blog-date { (blogpost.date_iso) }
-                            a href=(format!("/archive/{}", blogpost.url)) { (blogpost.title) }
+                            a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
                         }
                     }
                 }

@@ -24,10 +24,9 @@ pub fn header(title: &str, description: &str) -> Markup {
         link rel="icon" href="/assets/favicon.svg" type="image/svg+xml";
 
         header {
-            a href="/#h" { "Vilhelm Bergsøe" }
+            a href="/" { "Vilhelm Bergsøe" }
             nav {
-                a href="/archive/" { "Archive" }
-                a href="/#g" { "Contact" }
+                a href="/blog/" { "Blog" }
             }
         }
     }

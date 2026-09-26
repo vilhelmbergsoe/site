@@ -1,25 +1,14 @@
 use axum::{
     extract::Path,
-    http::{HeaderValue, StatusCode},
-    response::{IntoResponse, Redirect, Response},
+    http::StatusCode,
+    response::{IntoResponse, Response},
 };
 use maud::{html, PreEscaped};
 
 use crate::fragments::{footer, header};
 use crate::{handle_404, GENERATED_POSTS};
 
-pub async fn redirect_legacy_blog(Path(url): Path<String>) -> Result<Redirect, StatusCode> {
-    let destination = format!("/archive/{url}");
-    if HeaderValue::try_from(destination.as_str()).is_err() {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-
-    assert!(destination.starts_with("/archive/"));
-    assert!(destination.len() > "/archive/".len());
-    Ok(Redirect::permanent(&destination))
-}
-
-pub async fn handle_blog(Path(url): Path<String>) -> Response {
+pub async fn handle_blog_post(Path(url): Path<String>) -> Response {
     let blogpost = GENERATED_POSTS.iter().find(|blogpost| blogpost.url == url);
     assert!(GENERATED_POSTS.iter().all(|post| !post.content.is_empty()));
     assert!(GENERATED_POSTS.iter().all(|post| !post.title.is_empty()));
@@ -31,7 +20,7 @@ pub async fn handle_blog(Path(url): Path<String>) -> Response {
     (
         StatusCode::OK,
         html! {
-            (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe - Writing"))
+            (header(&format!("Vilhelm Bergsøe - {}", blogpost.title), "Vilhelm Bergsøe's blog"))
             main {
                 section #h {
                     div .blogpost {

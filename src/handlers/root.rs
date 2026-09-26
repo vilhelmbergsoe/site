@@ -8,7 +8,7 @@ pub async fn root() -> Markup {
     assert!(GENERATED_POSTS.iter().all(|post| !post.url.is_empty()));
 
     html! {
-        (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and writing"))
+        (header("Vilhelm Bergsøe - Home", "Vilhelm Bergsøe's personal website and blog"))
         div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;" {
             a href="/babble/blog" { "My blog" }
             a href="/babble/wp-login" { "Wordpress Login" }
@@ -16,19 +16,17 @@ pub async fn root() -> Markup {
         }
 
         main {
-            section #g {
-                h2 { "Contact" }
-                p { "email me at " a href="mailto:vilhelm@bergsoe.net" {"vilhelm@bergsoe.net"} br;
-                "my " a href="/assets/gpg.txt" { "GPG key" }
-                }
-
-            }
-            section #h { h2 { "Info" } p { "Software Developer and
+            section { h2 { "Info" } p { "Software Developer and
                 mathematics student from Copenhagen. I'm interested in systems programming,
                 mathematics, economics and whatever else catches my
                 attention." }
 
-                ul {
+                ul .profile-links {
+                    li {
+                        a href="mailto:vilhelm@bergsoe.net" { "Email" }
+                        " | "
+                        a href="/assets/gpg.txt" { "GPG key" }
+                    }
                     li {
                         a href="/cv.pdf" { "CV" }
                     }
@@ -44,17 +42,16 @@ pub async fn root() -> Markup {
                     li { a href="https://github.com/vilhelmbergsoe/brainybishop" { "brainybishop" } " - Simple little chess engine." }
                 }
 
-                h3 { "Writing" }
-                ul .writing-list {
+                h3 { "Latest posts" }
+                ul .post-list {
                     @for blogpost in GENERATED_POSTS.iter().filter(|blogpost| !blogpost.archived).take(3) {
                         li {
                             span.blog-date { (blogpost.date.0) }
-                            a href=(format!("/archive/{}", blogpost.url)) { (blogpost.title) }
+                            a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
                         }
                     }
-                    li { "..." }
                 }
-                p { a href="/archive/" { "More →" } }
+                p { a href="/blog/" { "All posts" } }
 
                 h3 { "Education" }
                 ul .split-list {

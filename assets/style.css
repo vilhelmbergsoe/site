@@ -78,7 +78,7 @@ body {
     line-height: 1.45;
     color: var(--tc);
     background: var(--bc);
-    max-width: 40em;
+    max-width: 36em;
     margin: 0 auto;
     padding: 0 0.7em;
     text-align: left;
@@ -156,21 +156,12 @@ ul {
     padding-left: 1em;
 }
 
-
-/* navigation */
-
-section,
-section:target~section:last-of-type {
-    display: none;
+.profile-links {
+    padding-left: 0;
+    list-style: none;
 }
 
-section:target,
-section:last-of-type {
-    display: inherit;
-    scroll-margin-top: 6em;
-}
 
-/* end navigation */
 
 header {
     display: flex;
@@ -273,12 +264,11 @@ button {
     margin-bottom: 0;
 }
 
-section#b li,
-.writing-list li {
+section#b li {
     display: flex;
 }
 
-.writing-list {
+.post-list {
     margin-bottom: 0.5rem;
 }
 

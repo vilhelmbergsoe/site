@@ -1,6 +1,6 @@
 # site
 
-My personal website with blog functionality.
+My personal website and blog.
 
 ## Usage
 
@@ -15,9 +15,9 @@ nix run
 
 `/` home page
 
-`/archive/` writing archive
+`/blog/` blog index
 
-`/archive/{url}` writing page
+`/blog/{url}` blog post
 
 `/tag/{tag}` tagged posts page
 

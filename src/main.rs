@@ -4,8 +4,8 @@ use axum::{routing::get, Router};
 
 pub mod handlers;
 use handlers::{
-    handle_404, handle_archive, handle_asset, handle_blog, handle_cv, handle_robots, handle_rss,
-    handle_sitemap, handle_tag, redirect_legacy_blog, root,
+    handle_404, handle_asset, handle_blog_index, handle_blog_post, handle_cv, handle_robots,
+    handle_rss, handle_sitemap, handle_tag, root,
 };
 
 pub mod fragments;
@@ -19,9 +19,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     let app = Router::new()
         .route("/", get(root))
-        .route("/archive/", get(handle_archive))
-        .route("/archive/:url", get(handle_blog))
-        .route("/blog/:url", get(redirect_legacy_blog))
+        .route("/blog/", get(handle_blog_index))
+        .route("/blog/:url", get(handle_blog_post))
         .route("/tag/:tag", get(handle_tag))
         .route("/cv.pdf", get(handle_cv))
         .route("/robots.txt", get(handle_robots))
