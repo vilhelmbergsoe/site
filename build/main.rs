@@ -19,6 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let cv_source = manifest_dir.join("cv/cv.typ");
     let blog_dir = manifest_dir.join("blog");
     let asset_dir = manifest_dir.join("assets");
+    let typst_dir = manifest_dir.join("typst");
 
     assert!(manifest_dir.is_absolute());
     assert!(output_dir.is_absolute());
@@ -26,10 +27,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed={}", cv_source.display());
     println!("cargo:rerun-if-changed={}", blog_dir.display());
     println!("cargo:rerun-if-changed={}", asset_dir.display());
+    println!("cargo:rerun-if-changed={}", typst_dir.display());
     prepare_output(&output_dir)?;
 
-    // Font discovery is expensive, so every Typst document shares one compiler.
-    let compiler = Compiler::new();
+    // Font and package discovery are expensive, so every Typst document shares one compiler.
+    let compiler = Compiler::new(manifest_dir.clone());
     documents::compile_cv(&compiler, &cv_source, &output_dir.join("cv.pdf"))?;
     documents::write_math_font(&compiler, &output_dir.join("fonts/new-cm-math-regular.otf"))?;
     assets::generate(&asset_dir, &output_dir.join("assets.rs"))?;

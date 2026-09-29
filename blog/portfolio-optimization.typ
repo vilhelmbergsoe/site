@@ -8,6 +8,9 @@
 #set document(title: post.title, date: post.date, keywords: post.tags)
 #metadata(post) <post-meta>
 
+#import "/typst/post.typ": anchored-headings
+#show: anchored-headings
+
 In the realm of finance, portfolio optimization is the process of
 selecting the optimal allocation of assets to maximize returns while
 minimizing risk. This blog post shares my notes on the mathematics of
@@ -18,15 +21,15 @@ progressing to more complex scenarios.
 #strong[Just a heads-up!]
 
 While I've explored portfolio optimization and have gained a decent
-grasp of the maths involved, these notes are more for my understanding
-than expert advice. So, take it all with a grain of salt! ;)
+grasp of the maths involved, these notes are for my own understanding
+rather than expert advice. So, take it all with a grain of salt! ;)
 ]
 
 Let's begin with the simplest problem:
 
 = Optimizing the allocation to a single asset.
 <optimizing-the-allocation-to-a-single-asset.>
-Suppose we have an asset with a expected return of $R$ and a variance of
+Suppose we have an asset with an expected return of $R$ and a variance of
 $sigma^2$. Our goal is to find the optimal allocation $w$ that minimizes
 the variance while maximizing the return. This is described using an
 #strong[objective function] as follows:
@@ -67,7 +70,7 @@ $1 / 2 sigma^2$, representing the asset's risk.
 
 #quote(block: true)[
 The $1 / 2$ in front of the risk term is really just to give us a
-cleaner derivative as we'll see later
+cleaner derivative, as we'll see later.
 ]
 
 The $b x$ term, on the other hand, represents the return of the asset,
@@ -100,12 +103,12 @@ assets with low returns and high risk.
 But, what if we have multiple assets to choose from? How do we optimize
 the allocation across multiple assets?
 
-= Optimizing a Portfolio of multiple assets
+= Optimizing a Portfolio of Multiple Assets
 <optimizing-a-portfolio-of-multiple-assets>
 We've seen how to optimize the allocation to a #strong[single asset];,
 where the trade-off is between return and risk. The optimal allocation
 was determined by balancing the expected return $R$ against the variance
-$sigma 2$ (the risk) of the asset. But what happens when we have two or
+$sigma^2$ (the risk) of the asset. But what happens when we have two or
 more assets to choose from?
 
 == Extending to Two Assets
@@ -162,8 +165,8 @@ $ sigma_p^2 = bb(E) [(R_p - bb(E) \[ R_p \])^2] $
 If our portfolio consists of two assets, the total return of the
 portfolio is a weighted sum of the individual asset returns.
 Specifically, if $w_A$ and $w_B$ represent the weights of Asset A and
-Asset B, respectively, then the portfolio return is, like described
-before:
+Asset B, respectively, then the portfolio return is, as described
+above:
 
 $ R_p = w_A R_A + w_B R_B $
 
@@ -236,11 +239,13 @@ assets:
   $N times N$ matrix that captures the variance of each asset and the
   covariance between each pair of assets.
   $ upright(bold(Sigma)) = mat(delim: "[", sigma_1^2, upright("Cov") \( 1 \, 2 \), dots.h.c, upright("Cov") \( 1 \, N \); upright("Cov") \( 2 \, 1 \), sigma_2^2, dots.h.c, upright("Cov") \( 2 \, N \); dots.v, dots.v, dots.down, dots.v; upright("Cov") \( N \, 1 \), upright("Cov") \( N \, 2 \), dots.h.c, sigma_N^2) $
-  \> Note that the diagonal of $upright(bold(Sigma))$ contains the
-  individual asset variances ($sigma_i^2$), and the off-diagonal
-  elements contain the covariances. Since
-  $upright("Cov") \( i \, j \) = upright("Cov") \( j \, i \)$, the
-  matrix is symmetric.
+  #quote(block: true)[
+    Note that the diagonal of $upright(bold(Sigma))$ contains the
+    individual asset variances ($sigma_i^2$), and the off-diagonal
+    elements contain the covariances. Since
+    $upright("Cov") \( i \, j \) = upright("Cov") \( j \, i \)$, the
+    matrix is symmetric.
+  ]
 
 With this notation, the portfolio's expected return and variance are
 expressed very neatly:
@@ -358,10 +363,14 @@ The #strong[returns vector] $upright(bold(R))$ is straightforward:
 $ upright(bold(R)) = mat(delim: "[", 0.10; 0.06) $
 
 For the #strong[covariance matrix] $upright(bold(Sigma))$, we need the
-variances and the covariance. - Variance of TechCorp:
-$sigma_T^2 = \( 0.20 \)^2 = 0.04$ - Variance of GlobalGoods:
-$sigma_G^2 = \( 0.15 \)^2 = 0.0225$ - Covariance:
-$upright("Cov") \( T \, G \) = rho_(T G) sigma_T sigma_G = 0.3 times 0.20 times 0.15 = 0.009$
+variances and the covariance:
+
+- Variance of TechCorp:
+  $sigma_T^2 = \( 0.20 \)^2 = 0.04$
+- Variance of GlobalGoods:
+  $sigma_G^2 = \( 0.15 \)^2 = 0.0225$
+- Covariance:
+  $upright("Cov") \( T \, G \) = rho_(T G) sigma_T sigma_G = 0.3 times 0.20 times 0.15 = 0.009$
 
 So, our covariance matrix $upright(bold(Sigma))$ is:
 $ upright(bold(Sigma)) = mat(delim: "[", 0.04, 0.009; 0.009, 0.0225) $
@@ -372,7 +381,7 @@ $upright(bold(w)) = 1 / lambda upright(bold(Sigma))^(- 1) upright(bold(R))$.
 We'll assume a moderate risk-aversion parameter of $lambda = 2$.
 
 + #strong[Find the inverse of the covariance matrix
-  ($upright(bold(Sigma))^(- 1)$):] For a 2x2 matrix, this is a standard
+  ($upright(bold(Sigma))^(- 1)$):] For a 2×2 matrix, this is a standard
   procedure. The result is:
   $ upright(bold(Sigma))^(- 1) approx mat(delim: "[", 27.47, - 10.99; - 10.99, 48.84) $
 
@@ -424,7 +433,7 @@ whole portfolio with matrices. By solving for the weights and then
 normalizing them, we landed on a specific mix: about 53% in TechCorp and
 47% in GlobalGoods.
 
-It's interesting that no matter what our personal risk aversion `λ` was,
+It's interesting that no matter what our personal risk aversion $lambda$ was,
 the #emph[ratio] between the assets stayed the same. Normalizing them
 just gives us a tangible portfolio to look at.
 
@@ -435,4 +444,4 @@ that with our normalization trick.
 
 These are deeper topics in portfolio theory, and we'll definitely dig
 into them in a future post. For now, hopefully, this gives a solid feel
-for the fundamental math involved. Thanks for reading
+for the fundamental math involved. Thanks for reading.

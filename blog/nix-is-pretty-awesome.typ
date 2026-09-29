@@ -8,17 +8,20 @@
 #set document(title: post.title, date: post.date, keywords: post.tags)
 #metadata(post) <post-meta>
 
+#import "/typst/post.typ": anchored-headings
+#show: anchored-headings
+
 = Introduction
 <introduction>
 I have known of Nix and NixOS for a while, and I've always found them
-very interesting. I even dabbed with NixOS in a rudamentary way on my
-Thinkpad x220, which I utilize as my home server.
+very interesting. I even dabbled with NixOS in a rudimentary way on my
+ThinkPad X220, which I utilize as my home server.
 
 However, I was not leveraging Nix to its full potential, as I managed
 most aspects of my system in an imperative manner, negating the
 advantages offered by Nix.
 
-Recently, my desktop drive went kapoot, which I viewed as the perfect
+Recently, my desktop drive went kaput, which I viewed as the perfect
 opportunity to migrate to NixOS and get a proper and well-structured
 configuration up and running.
 
@@ -31,7 +34,7 @@ resources, please refer to the end of this blog post.
 <what-is-nix>
 First off, what even is Nix?
 
-As stated on their the official #link("https://nixos.org")[Nix website];,
+As stated on the official #link("https://nixos.org")[Nix website];,
 #emph["Nix is a tool that takes a unique approach to package management
 and system configuration."]
 
@@ -53,7 +56,7 @@ When people mention Nix, they typically refer to one of three things:
   of over 80,000 packages and can be installed on Linux and other
   Unix-like systems like macOS.
 
-- #strong[NixOS - the Nix based linux distro]
+- #strong[NixOS - the Nix-based Linux distribution]
 
   NixOS is a Linux distro built around the Nix package manager and the
   declarative Nix programming language. It is designed to provide a
@@ -92,7 +95,7 @@ $ tree -L 2 /nix/store/1pry7pnxqig0n2pkl4mnhl76qlmkk6vi-hello-2.12.1
     └── man
 
 5 directories, 1 file
-vb@buckbeak:~]$ 
+vb@buckbeak:~$
 ```
 
 Under `share`, we find the typical `/usr/share` entries for man pages
@@ -180,7 +183,7 @@ This `flake.nix` file in the project root defines the flake, which
 specifies how to build the derivation, as well as the necessary
 dependencies for building and development shell environments:
 
-```js
+```nix
 {
   description = "A simple C program that uses SDL";
 
@@ -236,7 +239,7 @@ path, respectively.
 
 `nix build` will create a directory called `result` in the working
 directory, and in it, there is a `bin` directory that contains our
-binary. The keen among you, you might have figured out that `result` is
+binary. The keen among you might have figured out that `result` is
 actually a symlink to the `/nix/store`.
 
 ```sh
@@ -247,7 +250,7 @@ lrwxrwxrwx 1 vb users 52 Apr  5 20:25 result -> /nix/store/3mjvzschwmxivpmhm54x4
 A really neat piece of software that works super well with Nix is
 #link("https://direnv.net/")[direnv];.
 
-With direnv installed and setup on your system, you can add the
+With direnv installed and set up on your system, you can add the
 following to a `.envrc` file in your project root:
 
 ```sh
@@ -262,7 +265,7 @@ to the project root.
 The `flake.lock` file is an important aspect of Nix's reproducibility.
 Acting as a lockfile for all dependencies, it ensures that the input
 defined in the flake, such as `inputs.nixpkgs`, is locked to a specific
-revision/commit using a sha256 hashsum.
+revision or commit using a SHA-256 hash.
 
 In the flake, the `inputs.nixpkgs.url` is the link to the actual nixpkgs
 repo, which contains all the packages and dependencies. By locking the
@@ -272,7 +275,7 @@ your and your coworker's machines.
 There is so much more cool stuff you can do with Nix alone, but I think
 this gives you a pretty good idea of how useful it is.
 
-Let's take a look at NixOS..
+Let's take a look at NixOS.
 
 = NixOS: Declarative System Configuration
 <nixos-declarative-system-configuration>
@@ -284,7 +287,7 @@ declaratively on your NixOS machine.
 
 In your NixOS configuration, you simply add:
 
-```c
+```nix
 services.postgresql.enable = true;
 services.nginx.enable = true;
 ```
@@ -295,7 +298,7 @@ NixOS's declarativeness isn't limited to services though. You can
 configure quite literally everything. Here is a snippet from my own
 configuration:
 
-```c
+```nix
 # Configure user
 users.users = {
   vb = {
@@ -323,7 +326,7 @@ NixOS's configurability even extends to custom modules.
 Here is the same Nix module used to host this
 #link("https://github.com/vilhelmbergsoe/site")[site] on my server:
 
-```c
+```nix
 {inputs, ...}: {
   systemd.services.site = {
     enable = true;
@@ -344,7 +347,7 @@ Here is the same Nix module used to host this
 It uses the `inputs.site` which is an input defined in my
 configuration's `flake.nix` that refers to the GitHub repo for the site:
 
-```c
+```nix
 inputs = {
   # Nixpkgs
   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";

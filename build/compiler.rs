@@ -1,4 +1,4 @@
-use std::{error::Error, path::PathBuf};
+use std::{error::Error, fs, path::PathBuf};
 
 use typst::{
     diag::{FileError, FileResult, SourceDiagnostic},
@@ -8,14 +8,23 @@ use typst::{
     utils::LazyHash,
     Feature, Library, LibraryExt, World,
 };
-use typst_kit::diagnostics::{
-    emit, termcolor::ColorChoice, termcolor::StandardStream, DiagnosticFormat, DiagnosticWorld,
+use typst_kit::{
+    diagnostics::{
+        emit, termcolor::ColorChoice, termcolor::StandardStream, DiagnosticFormat, DiagnosticWorld,
+    },
+    files::{FileLoader, FileStore},
 };
 
 pub struct Compiler {
     library: LazyHash<Library>,
     book: LazyHash<FontBook>,
     fonts: Vec<Font>,
+    files: FileStore<SiteFiles>,
+}
+
+struct SiteFiles {
+    project_root: PathBuf,
+    package_root: PathBuf,
 }
 
 pub struct SiteWorld<'a> {
@@ -26,11 +35,15 @@ pub struct SiteWorld<'a> {
 }
 
 impl Compiler {
-    pub fn new() -> Self {
+    pub fn new(project_root: PathBuf) -> Self {
+        assert!(project_root.is_absolute());
+        assert!(project_root.is_dir());
+
         let fonts: Vec<Font> = typst_assets::fonts()
             .flat_map(|data| Font::iter(Bytes::new(data)))
             .collect();
         let book = FontBook::from_fonts(&fonts);
+        let files = FileStore::new(SiteFiles::new(project_root));
 
         assert!(!fonts.is_empty());
         assert!(book.contains_family("new computer modern math"));
@@ -42,6 +55,7 @@ impl Compiler {
             ),
             book: LazyHash::new(book),
             fonts,
+            files,
         }
     }
 
@@ -76,6 +90,59 @@ impl Compiler {
             assert_eq!(font.info().family, "New Computer Modern Math");
         }
         font
+    }
+}
+
+impl SiteFiles {
+    fn new(project_root: PathBuf) -> Self {
+        assert!(project_root.is_absolute());
+        assert!(project_root.is_dir());
+
+        let package_root = project_root.join("typst/packages");
+        assert!(package_root.is_absolute());
+        assert!(package_root.is_dir());
+        Self {
+            project_root,
+            package_root,
+        }
+    }
+
+    fn resolve(&self, id: FileId) -> FileResult<PathBuf> {
+        assert!(self.project_root.is_absolute());
+        assert!(self.package_root.is_absolute());
+
+        let root = match id.root() {
+            VirtualRoot::Project => self.project_root.clone(),
+            VirtualRoot::Package(package) => self
+                .package_root
+                .join(package.namespace.as_str())
+                .join(package.name.as_str())
+                .join(package.version.to_string()),
+        };
+        let path = id.vpath().realize(&root)?;
+
+        assert!(path.is_absolute());
+        assert!(path.starts_with(&root));
+        Ok(path)
+    }
+}
+
+impl FileLoader for SiteFiles {
+    fn load(&self, id: FileId) -> FileResult<Bytes> {
+        assert!(self.project_root.is_dir());
+        assert!(self.package_root.is_dir());
+
+        let path = self.resolve(id)?;
+        let data = fs::read(&path).map_err(|error| FileError::from_io(error, &path))?;
+
+        assert!(path.is_file());
+        assert_eq!(
+            data.len() as u64,
+            fs::metadata(&path)
+                .map_err(|error| FileError::from_io(error, &path))?
+                .len()
+        );
+        Ok(Bytes::new(data))
     }
 }
 
@@ -121,8 +188,10 @@ pub fn emit_diagnostics(
 
 impl DiagnosticWorld for SiteWorld<'_> {
     fn name(&self, id: FileId) -> String {
-        assert_eq!(id, self.main);
-        assert_eq!(id.vpath(), self.main.vpath());
+        assert!(!id.vpath().get_without_slash().is_empty());
+        if id == self.main {
+            assert_eq!(id.vpath(), self.main.vpath());
+        }
         id.vpath().get_without_slash().to_owned()
     }
 }
@@ -155,15 +224,14 @@ impl World for SiteWorld<'_> {
         if id == self.main {
             Ok(self.source.clone())
         } else {
-            Err(FileError::NotFound(self.path.clone()))
+            self.compiler.files.source(id)
         }
     }
 
     fn file(&self, id: FileId) -> FileResult<Bytes> {
         assert!(!self.compiler.fonts.is_empty());
         assert_eq!(self.source.id(), self.main);
-        let _ = id;
-        Err(FileError::NotFound(self.path.clone()))
+        self.compiler.files.file(id)
     }
 
     fn font(&self, index: usize) -> Option<Font> {

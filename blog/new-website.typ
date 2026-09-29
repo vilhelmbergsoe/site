@@ -8,6 +8,9 @@
 #set document(title: post.title, date: post.date, keywords: post.tags)
 #metadata(post) <post-meta>
 
+#import "/typst/post.typ": anchored-headings
+#show: anchored-headings
+
 In August of last year, I published a blog post titled "Creating my
 website", but since then, significant changes have been made in the
 implementation of my site and the blog post is outdated. I thought I
@@ -17,8 +20,8 @@ implementation details in this blog post.
 = Background and Motivation
 <background-and-motivation>
 First off, I should establish the motivation for the move from Go to
-Rust. I should clarify that performance and safety was not the primary
-concern with my original implementation in Go. In fact I like Go and the
+Rust. I should clarify that performance and safety were not the primary
+concerns with my original implementation in Go. In fact I like Go and the
 old codebase was just fine but there was a separate reason for my
 switch.
 
@@ -32,7 +35,7 @@ is fundamentally incompatible with Nix.
 There is a way to get over this hurdle, by using a code generation tool
 like #link("https://github.com/nix-community/gomod2nix")[gomod2nix];.
 This, however, is a pain and I'd rather not need to generate new Nix
-expressions everytime I update dependencies. Rust, however, doesn't have
+expressions every time I update dependencies. Rust, however, doesn't have
 this problem and works exceptionally well with Nix.
 
 For this reason, combined with my new interest in the Rust language I
@@ -75,7 +78,7 @@ let app = Router::new()
 So far everything looks pretty familiar.
 
 The `.with_state(state)` refers to the common state for all the
-endpoints. This state contains a `Vec` of `BlogPost`'s:
+endpoints. This state contains a `Vec` of `BlogPost`s:
 
 ```rust
 pub struct AppState {
@@ -244,7 +247,7 @@ First, we're reading the contents of the file into `text`. Next we make
 a call to `parse_frontmatter()`, which is my dodgy frontmatter parser
 written using the parser combinator library
 #link("https://docs.rs/nom/latest/nom/")[nom];. The parsing logic itself
-is straightforward: It searches for a pair of delimiters "---" and
+is straightforward: It searches for a pair of delimiters `---` and
 extracts the text between them as the frontmatter. The remaining part of
 the file is considered the main content.
 
@@ -276,7 +279,7 @@ struct Frontmatter {
 After parsing the date from the string literal in the Frontmatter, we
 convert the markdown to html with the
 #link("https://docs.rs/comrak/latest/comrak/")[comrak] markdown parser,
-using a nice one liner:
+using a nice one-liner:
 
 ```rust
 let html = markdown_to_html_with_plugins(content, &options, &plugins);
@@ -358,12 +361,12 @@ This is the entirety of the blog handler for the `/blog/{url}` endpoint.
 
 Essentially we find the first blog post that matches the url requested
 and return the default blog page with the contents of the blog post
-integrated otherwise we pass control to the 404 Not Found handler.
+integrated; otherwise, we pass control to the 404 Not Found handler.
 
 I'm aware that searching through a `Vec` isn't very efficient and I
-should look into using `HashSet` or `HashMap` for the lookups the
-problem with this is sorting for dates isn't possible and I have yet to
-do benchmarks to find out which really has the biggest effect on
+should look into using `HashSet` or `HashMap` for the lookups. The
+problem with this is that sorting by date isn't possible, and I have yet
+to do benchmarks to find out which really has the biggest effect on
 performance.
 
 The root endpoint looks kind of the same, with the only dynamic part
@@ -376,7 +379,7 @@ ul {
     @for blogpost in &state.blogposts {
         @if !blogpost.archived {
             li {
-                (blogpost.date.format("D%d-%m-%Y "))
+                (blogpost.date.format("%d-%m-%Y "))
                 a href=(format!("/blog/{}", blogpost.url)) { (blogpost.title) }
             }
         }
@@ -403,7 +406,7 @@ Here the template for the rss feed looks like this:
         <description>My Blog RSS Feed</description>
         @for post in posts {
             <item>
-                <guid>https://bergsoe/blog/@post.url</guid>
+                <guid>https://bergsoe.net/blog/@post.url</guid>
                 <title>@post.title</title>
                 <link>https://bergsoe.net/blog/@post.url</link>
                 <description>tags: @post.tags.join(", ")</description>
@@ -416,7 +419,7 @@ Here the template for the rss feed looks like this:
 
 = Nix deployment
 <nix-deployment>
-As mentioned, the main drive behind my move from Rust is ease of
+As mentioned, the main drive behind my move to Rust is ease of
 deployment with Nix. So let's look into how that is done:
 
 In the project root we define a Nix flake `flake.nix`. Here I utilize
@@ -425,7 +428,7 @@ Crane provides various niceties such as automatic source fetching and
 incremental builds.
 
 One problem you run into is having relative paths work correctly when
-the service is run from the nix store. There are probably many ways of
+the service is run from the Nix store. There are probably many ways of
 solving this problem, but I opted for an environment variable with the
 path to the project directory:
 
@@ -511,7 +514,7 @@ about both Rust and Nix during this process.
 If you're interested in looking at the full code you can find the
 repository #link("https://github.com/vilhelmbergsoe/site")[here];.
 
-Also if you're interested in seeing the nixos configuration in it's
+Also if you're interested in seeing the NixOS configuration in its
 entirety you can find it
 #link("https://github.com/vilhelmbergsoe/dotfiles/blob/master/hosts/clifton/modules/site.nix")[here];.
 

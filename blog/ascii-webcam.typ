@@ -8,7 +8,11 @@
 #set document(title: post.title, date: post.date, keywords: post.tags)
 #metadata(post) <post-meta>
 
+#import "/typst/post.typ": anchored-headings
+#show: anchored-headings
+
 #html.elem("img", attrs: (src: "/assets/pictures/ascii-guitar.webp", alt: "picture of my guitar in ASCII"))
+#emph[picture of my guitar in ASCII]
 
 #html.elem("hr")
 
@@ -21,7 +25,7 @@ grayscale image and maps each luma pixel value to a character in a
 character set that incrementally fills the font space and gives the
 illusion of a brighter pixel.
 
-For example, a ” ” character would represent a darker pixel and "\@"
+For example, a " " character would represent a darker pixel and "\@"
 would represent a brighter pixel.
 
 I chose #link("https://www.rust-lang.org/")[Rust] 🦀 for implementing
@@ -34,28 +38,28 @@ compiling for macOS and Windows didn't work, and the API design got in
 the way of some possible optimizations I wanted to do.
 
 So I finally decided to only support Linux for now and just used the
-#link("https://crates.io/crates/v4l")[v4l] (video 4 linux) crate for
+#link("https://crates.io/crates/v4l")[v4l] (Video4Linux) crate for
 getting the webcam frame buffers.
 
 For profiling my application, I used
 #link("https://github.com/flamegraph-rs/flamegraph")[flamegraph];. A
 #link("https://www.brendangregg.com/flamegraphs.html")[Flame graph] is a
 visualization of hierarchical data, created to visualize stack traces of
-profiled software so that the most frequent code-paths to be identified
+profiled software so that the most frequent code paths can be identified
 quickly and accurately.
 
 This makes it more obvious what the main time-takers of your application
 are and allows you to cut down their execution time.
 
-For my initial implementation, the main culprit, taking up around 82 pct
-of the program, was image resizing. That's because you have to downscale
+For my initial implementation, the main culprit, taking up around 82%
+of the program's runtime, was image resizing. That's because you have to downscale
 the camera input to the size of the console, and only after can you map
 each pixel value to an ASCII character. I used
 #link("https://crates.io/crates/image")[image-rs's]
 #link("https://docs.rs/image/latest/image/enum.DynamicImage.html#method.resize_exact")[resize\_exact()];,
 with the Gaussian filter.
 
-I eliminated a lot wasted time by using the
+I eliminated a lot of wasted time by using the
 #link("https://crates.io/crates/fast_image_resize")[fast\_image\_resize]
 crate with the nearest image resampling filter.
 
@@ -65,28 +69,28 @@ time-takers I could cut down on…
 As mentioned before, I switched to v4l in order to improve performance.
 I only needed a grayscale image, but nokhwa only supported decompressing
 in the RGB format. By using v4l and manually decompressing the MJPEG
-stream I could skip the forward-backward which also helped out a good
+stream, I could skip the RGB round trip, which also helped out a good
 bit.
 
 The last time-taker was writing the characters to the terminal buffer. I
 tried different combinations of stdout being wrapped in a BufWriter,
 using a buffer for each line, and finally just allocating enough space
 to fit the entire terminal buffer. This also helped out a good deal and
-allowed you to have a higher resolution "image" without noticable lag or
+allowed you to have a higher resolution "image" without noticeable lag or
 scanlines.
 
 = Conclusion
 <conclusion>
 Benchmarking the program before and after the optimizations mentioned
-above and a few more in a well lit room to account for auto exposure, I
-observed a 230% increase in average fps, skyrocketing from 13 to 30. It
+above and a few more in a well-lit room to account for auto exposure, I
+observed average FPS reach roughly 230% of its original rate, rising from 13 to 30. It
 is important to note that 30 fps is the max that my webcam is rated for,
 and it's likely that it could exceed 30 fps with a faster webcam.
 
-Overall, this was a really fun project and I learned a ton about rust
-and optimization techniques. I got to use cool tools in order to profile
-my applications and observed significant improvement in fps which makes
-my efforts worth it.
+Overall, this was a really fun project and I learned a ton about Rust
+and optimization techniques. I got to use cool tools to profile my
+application and observed significant improvements in FPS, which made my
+efforts worthwhile.
 
 You can check out the repository
 #link("https://github.com/vilhelmbergsoe/asciicam.git")[here];.

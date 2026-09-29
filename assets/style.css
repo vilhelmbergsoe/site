@@ -124,7 +124,7 @@ pre {
     margin-bottom: 1rem;
 }
 
-h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
+h1 .anchor, h2 .anchor, h3 .anchor, h4 .anchor, h5 .anchor, h6 .anchor {
     display: inline-block;
     font-size: 1.5rem;
     font-weight: bold;
@@ -136,19 +136,19 @@ h1 a.anchor, h2 a.anchor, h3 a.anchor, h4 a.anchor, h5 a.anchor, h6 a.anchor {
     line-height: 2rem;
 }
 
-h1 a.anchor, h2 a.anchor {
+h1 .anchor, h2 .anchor {
     margin-top: 0.2rem;
 }
 
-h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+h1:hover .anchor, h2:hover .anchor, h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, h6:hover .anchor {
     opacity: 1;
 }
 
-a.anchor:hover {
+.anchor:hover {
     text-decoration: underline;
 }
 
-a.anchor::before {
+.anchor::before {
     content: "#";
 }
 
@@ -220,6 +220,41 @@ footer {
 
 .blogpost img.narrow-diagram {
     width: 50%;
+}
+
+.blogpost figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.blogpost .typst-diagram {
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.2rem;
+    overflow: visible;
+}
+
+.blogpost .typst-diagram svg {
+    width: min(100%, var(--diagram-width)) !important;
+    max-width: 100%;
+    height: auto !important;
+    margin: 0 auto;
+}
+
+.blogpost figcaption {
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+@media (prefers-color-scheme: dark) {
+    .blogpost .typst-diagram {
+        filter: invert(90%);
+    }
 }
 
 hr {
