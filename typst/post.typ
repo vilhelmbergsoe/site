@@ -1,3 +1,5 @@
+#import "@preview/cetz:0.5.0"
+
 #let anchored-headings(body) = {
   assert(type(body) == content)
   assert(repr(body).len() > 0)
@@ -29,4 +31,26 @@
   }
 
   body
+}
+
+// A cetz canvas embedded as inline SVG in HTML output.
+#let drawing(alt, display-width: "30rem", ..args) = {
+  assert(type(alt) == str)
+  assert(alt.trim() != "")
+  assert(type(display-width) == str)
+  assert(display-width.trim() != "")
+
+  let canvas = pad(x: 3pt, y: 3pt, cetz.canvas(..args))
+  context if target() == "html" {
+    html.elem("div", attrs: (
+      class: "typst-diagram",
+      style: "--diagram-width: " + display-width,
+      role: "img",
+      aria-label: alt,
+    ))[
+      #html.frame(canvas)
+    ]
+  } else {
+    canvas
+  }
 }

@@ -11,437 +11,407 @@
 #import "/typst/post.typ": anchored-headings
 #show: anchored-headings
 
-In the realm of finance, portfolio optimization is the process of
-selecting the optimal allocation of assets to maximize returns while
-minimizing risk. This blog post shares my notes on the mathematics of
-portfolio optimization, starting with single-asset optimization and
-progressing to more complex scenarios.
+= Starting with a Single Asset
+<starting-with-a-single-asset>
+Suppose we have some asset with a random return $r$. Its expected
+return is $mu = bb(E)[r]$, and its variance is $sigma^2 =
+upright("Var")(r)$. Our goal is to find the optimal allocation of
+capital $w$ that balances expected return against variance.
 
-#quote(block: true)[
-#strong[Just a heads-up!]
+This is described using our #strong[objective function]:
 
-While I've explored portfolio optimization and have gained a decent
-grasp of the maths involved, these notes are for my own understanding
-rather than expert advice. So, take it all with a grain of salt! ;)
-]
+$ max_w quad w mu - lambda / 2 sigma^2 w^2 $
 
-Let's begin with the simplest problem:
+There's quite a lot happening here, so let's break it down.
 
-= Optimizing the allocation to a single asset.
-<optimizing-the-allocation-to-a-single-asset.>
-Suppose we have an asset with an expected return of $R$ and a variance of
-$sigma^2$. Our goal is to find the optimal allocation $w$ that minimizes
-the variance while maximizing the return. This is described using an
-#strong[objective function] as follows:
+The squared exposure $w^2$ confused me quite a bit the first time
+'round, but here's how it pops up: When we scale the random return $r$
+by $w$, we get a new random return $w r$. The variance of this scaled
+return is given by:
 
-$ min quad 1 / 2 sigma^2 w^2 - R w $
-
-There's a lot happening here, so let's break it down.
-
-You might notice the quadratic function form $a x^2 + b x + c$; this is
-intentional. The $a x^2$ term represents our risk, scaled by the square
-of the allocation $w$.
-
-#quote(block: true)[
-The squared allocation $w^2$ can be a bit confusing, but here's why it
-matters: When we scale the asset return $R$ by $w$, we get a new return
-$w R$. The variance of this scaled return is given by:
-
-$ upright("Var") \( w R \) = bb(E) [(w R - bb(E) [w R])^2] $
+$ upright("Var") \( w r \) = bb(E) [(w r - bb(E) [w r])^2] $
 
 Since $w$ is a constant, we can factor it out:
-$ = bb(E) [(w (R - bb(E) [R]))^2] $
-$ = w^2 dot.op bb(E) [(R - bb(E) [R])^2] $
+$ = bb(E) [(w (r - bb(E) [r]))^2] $
+$ = w^2 dot.op bb(E) [(r - bb(E) [r])^2] $
 
-The last term is simply the variance of $R$: $ = w^2 sigma^2 $
+The last term is simply the variance of $r$: $ = w^2 sigma^2 $
 
-Thus, we see that the variance of the scaled return is proportional to
-the square of the allocation.
+The expected return scales linearly instead:
 
-#strong[In short:] Increasing your investment in an asset not only
-boosts returns but also raises your exposure to return variability. For
-example, doubling your allocation doesn't just double the return; it
-quadruples your risk. This quadratic relationship explains the squared
-term in the variance calculation.
-]
+$ bb(E)[w r] = w bb(E)[r] = w mu $
 
-Now, back to our objective function: the coefficient $a$ is
-$1 / 2 sigma^2$, representing the asset's risk.
+So doubling $w$ doubles our expected return but quadruples
+variance. In our model the reward grows linearly while the variance
+penalty grows quadratically which means that, at some point, taking on
+more exposure hurts the objective more than it helps.
+
+#quote(block: true)[Using variance as our measure of risk is a modelling choice
+ from mean-variance optimization; it makes this a quadratic
+ optimization problem with a nice solution]
+
+Now back to our objective function: the term $lambda / 2 sigma^2 w^2$
+represents our variance penalty with a risk-aversion parameter
+$lambda$ which controls how heavily variance is penalized.
 
 #quote(block: true)[
 The $1 / 2$ in front of the risk term is really just to give us a
 cleaner derivative, as we'll see later.
 ]
 
-The $b x$ term, on the other hand, represents the return of the asset,
-scaled by the allocation $w$. Here, $b$ is equal to $- R$, which is the
-negative of the return of the asset. The negation is used because we
-want to maximize the return, and the minimization problem will try to
-minimize the negative return, effectively maximizing the actual return.
+Now to find the optimal exposure $w$ we need to take the derivative
+of the objective function with respect to $w$, set it to zero, and
+solve for $w$:
 
-The $c$ term is absent in this case, as there is no constant term in our
-objective function.
+$ frac(partial , partial w) \( w mu - lambda / 2 sigma^2 w^2 \) = 0 $
 
-Now, to find the optimal allocation $w$, we need to minimize this
-quadratic function. We can do this by taking the derivative of the
-function with respect to $w$, setting it to zero, and solving for $w$.
-This will give us the value of $w$ that minimizes the function.
+$ mu - lambda sigma^2 w = 0 $
 
-Let's do that:
+$ w^* = mu / (lambda sigma^2) $
 
-$ frac(partial , partial w) \( 1 / 2 sigma^2 w^2 - R w \) = 0 $
+So the optimal exposure to our single asset is given by
+$frac(mu,lambda sigma^2)$. This makes good intuitive sense, as we want more
+exposure to assets with high expected returns and low variance, and
+less exposure when we are more risk-averse.
 
-$ sigma^2 w - R = 0 $
-
-$ w = R / sigma^2 $
-
-So, the optimal allocation to the single asset is given by the ratio of
-the return to the variance. This makes intuitive sense, as we want to
-allocate more to assets with high returns and low risk, and less to
-assets with low returns and high risk.
-
-But, what if we have multiple assets to choose from? How do we optimize
+But what if we instead have multiple assets to choose from? How do we optimize
 the allocation across multiple assets?
 
-= Optimizing a Portfolio of Multiple Assets
-<optimizing-a-portfolio-of-multiple-assets>
+= Adding a Second Asset
+<adding-a-second-asset>
 We've seen how to optimize the allocation to a #strong[single asset];,
-where the trade-off is between return and risk. The optimal allocation
-was determined by balancing the expected return $R$ against the variance
-$sigma^2$ (the risk) of the asset. But what happens when we have two or
-more assets to choose from?
+where the trade-off is between expected return and variance. The optimal
+allocation was determined by balancing the expected return $mu$ against
+the variance $sigma^2$ of the asset. But what happens when we have two
+or more assets to choose from?
 
-== Extending to Two Assets
-<extending-to-two-assets>
-Let's start small, with just two assets, Asset A and Asset B. Each asset
-has its own expected return $R_A$, $R_B$ and variance $sigma_A^2$,
-$sigma_B^2$, just like the single asset case. If we want to allocate our
-capital between these two assets, we'll assign weights $w_A$ and $w_B$,
-where the expected return of the portfolio is a simple weighted average
-of the expected returns of the individual assets:
+Let's start small, with just two assets, Asset A and Asset B. Their
+random returns are $r_A$ and $r_B$, with expected returns $mu_A$ and
+$mu_B$ and variances $sigma_A^2$ and $sigma_B^2$, just like the
+single-asset case. If we want to allocate our capital between these two
+assets, we'll assign weights $w_A$ and $w_B$. The random portfolio return
+is the weighted sum:
 
-$ R_p = w_A R_A + w_B R_B $
+$ r_p = w_A r_A + w_B r_B $
 
-This is straightforward: the more you allocate to an asset, the more its
-return contributes to the portfolio's overall return.
+Its expected return is therefore:
 
-Here's where things start to get interesting. You might assume that the
-portfolio risk is also just the weighted average of the individual
-risks:
+$ bb(E)[r_p] = w_A mu_A + w_B mu_B $
+
+This is pretty straightforward: the more you allocate to an asset, the
+more its expected return contributes to the portfolio's overall
+expected return.
+
+Here's where things start to get fun. You might assume that the
+portfolio variance is just the sum of the individual variance terms:
 
 $ sigma_p^2 = w_A^2 sigma_A^2 + w_B^2 sigma_B^2 $
 
-At first glance, this seems reasonable. But it's incomplete.
+And at first, this does seems reasonable. But it doesn't tell us
+whether the two assets tend to move in relation to eachother.
 
-Why? Because it doesn't take into account how the #strong[two assets
-interact];. We need to consider how the returns of Asset A and Asset B
-move in relation to each other. This is where #strong[covariance] comes
-in.
+Imagine that Asset A and Asset B are positively correlated: when Asset
+A goes up, Asset B will tend to go up too. This will result in a
+portfolio with a higher risk profile as both assets are likely to
+experience both gains, and losses at the same time, reinforcing each
+other's variance.
 
-== Why Covariance Matters
-<why-covariance-matters>
-Imagine that Asset A and Asset B are highly #strong[correlated] -- when
-Asset A goes up, Asset B tends to go up too. In this case, the
-portfolio's risk will be higher because both assets are likely to
-experience gains and losses together, reinforcing each other's
-volatility.
+Now imagine that Asset A and Asset B tend to move in opposite
+directions (i.e., they have negative correlation), the portfolio's
+overall risk will be lower. This is because the losses in one asset
+might be offset by gains in the other, reducing the total variance
+of the portfolio.
 
-On the other hand, if Asset A and Asset B tend to move in
-#strong[opposite directions] (i.e., they have negative correlation), the
-portfolio's overall risk will be lower. This is because the losses in
-one asset might be offset by gains in the other, reducing the total
-volatility of the portfolio.
-
-== Deriving the formula for variance of multiple assets
-<deriving-the-formula-for-variance-of-multiple-assets>
 To derive the formula for the variance of a portfolio with multiple
 assets, we begin with the definition of variance. For any random
 variable, the variance measures the spread of its possible outcomes
-around its mean. In the case of a portfolio, the variance of the
-portfolio return, $R_p$, is given by:
+around its mean. In the case of a portfolio, the variance of the random
+portfolio return $r_p$ is given by:
 
-$ sigma_p^2 = bb(E) [(R_p - bb(E) \[ R_p \])^2] $
+$ sigma_p^2 = bb(E) [(r_p - bb(E) \[ r_p \])^2] $
 
 If our portfolio consists of two assets, the total return of the
-portfolio is a weighted sum of the individual asset returns.
+portfolio is a weighted sum of the individual random returns.
 Specifically, if $w_A$ and $w_B$ represent the weights of Asset A and
-Asset B, respectively, then the portfolio return is, as described
+Asset B respectively, then the portfolio return is, as described
 above:
 
-$ R_p = w_A R_A + w_B R_B $
+$ r_p = w_A r_A + w_B r_B $
 
 Substituting this into the variance formula, we get:
 
-$ sigma_p^2 = bb(E) [(w_A R_A + w_B R_B - bb(E) \[ w_A R_A + w_B R_B \])^2] $
+$ sigma_p^2 = bb(E) [(w_A r_A + w_B r_B - bb(E) \[ w_A r_A + w_B r_B \])^2] $
 
 Since $w_A$ and $w_B$ are constants, we can factor them out of the
 expectation, giving us:
 
-$ sigma_p^2 = bb(E) [(w_A \( R_A - bb(E) \[ R_A \] \) + w_B \( R_B - bb(E) \[ R_B \] \))^2] $
+$ sigma_p^2 = bb(E) [(w_A \( r_A - bb(E) \[ r_A \] \) + w_B \( r_B - bb(E) \[ r_B \] \))^2] $
 
-At this stage, we expand the square inside the expectation, which gives
-us three terms:
+At this point, we can expand the square inside the expectation, which
+gives us three terms:
 
-$ sigma_p^2 = bb(E) [w_A^2 \( R_A - bb(E) \[ R_A \] \)^2 + w_B^2 \( R_B - bb(E) \[ R_B \] \)^2 + 2 w_A w_B \( R_A - bb(E) \[ R_A \] \) \( R_B - bb(E) \[ R_B \] \)] $
+$ sigma_p^2 = bb(E) [w_A^2 \( r_A - bb(E) \[ r_A \] \)^2 + w_B^2 \( r_B - bb(E) \[ r_B \] \)^2 + 2 w_A w_B \( r_A - bb(E) \[ r_A \] \) \( r_B - bb(E) \[ r_B \] \)] $
 
-The first two terms correspond to the individual variances of each
-asset, scaled by the square of their respective weights like we showed
-earlier with the single-asset case. Specifically,
-$w^2 \( R - bb(E) \[ R \] \)^2$ simplifies to $w^2 sigma^2$.
+The first two terms correspond to our individual variances of each
+asset scaled by the square of their respective weights like we showed
+earlier with the single-asset case.
 
-The third term,
-$2 w_A w_B \( R_A - bb(E) \[ R_A \] \) \( R_B - bb(E) \[ R_B \] \)$,
-measures how the returns of the two assets move together---specifically,
-this is the covariance between the returns of Asset A and Asset B. By
-definition:
+The third term, $2 w_A w_B \( r_A - bb(E) \[ r_A \] \) \( r_B - bb(E)
+\[ r_B \] \)$, measures how the returns of the two assets move
+together. This is the covariance between the returns of Asset A and
+Asset B. By definition:
 
-$ upright("Cov") \( A \, B \) = bb(E) [\( R_A - bb(E) \[ R_A \] \) \( R_B - bb(E) \[ R_B \] \)] $
+$ upright("Cov") \( A \, B \) = bb(E) [\( r_A - bb(E) \[ r_A \] \) \( r_B - bb(E) \[ r_B \] \)] $
 
-The factor of 2 comes from the expansion of $\( w_A R_A + w_B R_B \)^2$,
-where the covariance term appears twice: once for $R_A$ paired with
-$R_B$ and once for $R_B$ paired with $R_A$.
-
-Thus, the cross-term becomes:
+Therefore our cross-term becomes:
 
 $ 2 w_A w_B upright("Cov") \( A \, B \) $
 
-Finally, combining all the terms, the variance of the portfolio is:
+Now combining everything we get:
 
 $ sigma_p^2 = w_A^2 sigma_A^2 + w_B^2 sigma_B^2 + 2 w_A w_B upright("Cov") \( A \, B \) $
 
-This formula shows that the portfolio variance depends not only on the
+This formula shows that our portfolio variance depends on both the
 individual variances of each asset but also on how the returns of the
-assets interact, as captured by the covariance term. This is why
-diversification works --- if the assets are not perfectly correlated,
-the covariance term can reduce overall portfolio risk, even while the
-portfolio maintains a positive return.
+assets interact, as captured by our covariance term.
 
-This formula for two assets is already getting a bit long. Imagine
-trying to write it for a portfolio of 100 assets! This is where the
-elegance of linear algebra comes to our rescue, allowing us to express
-these concepts in a much cleaner way.
+This is why diversification works: If the assets are not perfectly
+correlated, the covariance term can reduce (or increase) overall
+portfolio risk, even while the portfolio maintains a positive expected
+return.
 
-== Generalizing to N Assets with Matrix Notation
-<generalizing-to-n-assets-with-matrix-notation>
-To handle a portfolio with any number of assets, we switch to vectors
-and matrices. Let's define the key components for a portfolio of $N$
-assets:
+= Generalizing to N Assets
+<generalizing-to-n-assets>
+Our formula for just two assets is already getting a bit long. Imagine
+trying to write this out for a portfolio of 100 assets! We'll use some
+basic linear algebra to express these concepts in a much cleaner way.
 
-+ #strong[The Weights Vector ($upright(bold(w))$):] A column vector
-  containing the allocation to each asset.
-  $ upright(bold(w)) = mat(delim: "[", w_1; w_2; dots.v; w_N) $
+For $N$ assets we collect their random returns and our chosen weights
+into two column vectors:
 
-+ #strong[The Returns Vector ($upright(bold(R))$):] A column vector of
-  the expected returns for each asset.
-  $ upright(bold(R)) = mat(delim: "[", R_1; R_2; dots.v; R_N) $
+$ upright(bold(r)) = mat(delim: "[", r_1; r_2; dots.v; r_N), quad upright(bold(w)) = mat(delim: "[", w_1; w_2; dots.v; w_N) $
 
-+ #strong[The Covariance Matrix ($upright(bold(Sigma))$):] An
-  $N times N$ matrix that captures the variance of each asset and the
-  covariance between each pair of assets.
-  $ upright(bold(Sigma)) = mat(delim: "[", sigma_1^2, upright("Cov") \( 1 \, 2 \), dots.h.c, upright("Cov") \( 1 \, N \); upright("Cov") \( 2 \, 1 \), sigma_2^2, dots.h.c, upright("Cov") \( 2 \, N \); dots.v, dots.v, dots.down, dots.v; upright("Cov") \( N \, 1 \), upright("Cov") \( N \, 2 \), dots.h.c, sigma_N^2) $
-  #quote(block: true)[
-    Note that the diagonal of $upright(bold(Sigma))$ contains the
-    individual asset variances ($sigma_i^2$), and the off-diagonal
-    elements contain the covariances. Since
-    $upright("Cov") \( i \, j \) = upright("Cov") \( j \, i \)$, the
-    matrix is symmetric.
-  ]
+Taking the expected value of each return gives us the expected-return
+vector:
 
-With this notation, the portfolio's expected return and variance are
-expressed very neatly:
+$ upright(bold(mu)) = bb(E)[upright(bold(r))] = mat(delim: "[", mu_1; mu_2; dots.v; mu_N) $
 
-- #strong[Portfolio Return:] $R_p = upright(bold(w))^T upright(bold(R))$
-- #strong[Portfolio Variance:]
-  $sigma_p^2 = upright(bold(w))^T upright(bold(Sigma)) upright(bold(w))$
+We then collect all the variances and covariances in the covariance
+matrix $upright(bold(Sigma))$, whose entries are:
 
-This is the exact same math as before, just generalized for $N$ assets.
-The term $upright(bold(w))^T upright(bold(R))$ is the dot product of the
-weights and returns, giving us a weighted average. The term
-$upright(bold(w))^T upright(bold(Sigma)) upright(bold(w))$ is a
-quadratic form that perfectly captures all the variance and covariance
-terms.
+$ upright(bold(Sigma))_(i j) = upright("Cov") \( r_i, r_j \) $
 
-= The N-Asset Optimization Problem
-<the-n-asset-optimization-problem>
-Now we can formulate the core problem of portfolio optimization. We want
-to find the best weight vector $upright(bold(w))$. A common way to frame
-this is as maximizing a utility function that balances return and risk:
+The diagonal entries are the individual asset variances, while the
+off-diagonal entries show how each pair of assets moves together. Since
+$upright("Cov") \( r_i, r_j \) = upright("Cov") \( r_j, r_i \)$, the
+covariance matrix is symmetric.
 
-$ max_(upright(bold(w))) quad upright(bold(w))^T upright(bold(R)) - lambda / 2 upright(bold(w))^T upright(bold(Sigma)) upright(bold(w)) $
+From this, our portfolio equations follow:
 
-This should look familiar! It's the multi-asset version of our
-single-asset objective function. The new term, $lambda$ (lambda), is a
-#strong[risk-aversion parameter];.
+$ r_p = upright(bold(w))^T upright(bold(r)), quad bb(E)[r_p] = upright(bold(w))^T upright(bold(mu)) $
 
-#quote(block: true)[
-#strong[What is $lambda$?]
+$ upright("Var")(r_p) = upright(bold(w))^T upright(bold(Sigma)) upright(bold(w)) $
 
-$lambda$ represents how much you dislike risk.
+Expanding $upright(bold(w))^T upright(bold(Sigma)) upright(bold(w))$
+gives us the same individual variance and pairwise covariance terms we
+derived above, only now the notation works for any number of assets.
 
-- A #strong[high $lambda$] means you are very risk-averse. The
-  optimization will heavily penalize variance, leading to a safer,
-  lower-return portfolio.
-- A #strong[low $lambda$] means you are more willing to take on risk for
-  potentially higher returns.
+== Solving for the Weights
+<solving-for-the-weights>
 
-By varying $lambda$, we can trace out a whole set of optimal portfolios.
-]
+Now we can write the $N$-asset optimization problem:
 
-We also typically add the constraint that all weights must sum to one:
-$sum_(i = 1)^N w_i = 1$.
+$ max_(upright(bold(w))) quad upright(bold(w))^T upright(bold(mu)) - lambda / 2 upright(bold(w))^T upright(bold(Sigma)) upright(bold(w)) $
 
-== Solving the Optimization Problem
-<solving-the-optimization-problem>
-So we have our objective function, but how do we actually find the
-optimal weight vector $upright(bold(w))$ that maximizes it?
+This should look familiar! It's the multi-asset version of our earlier
+single-asset objective function. Just like the single-asset problem,
+$lambda$ controls how heavily we penalize variance.
 
-The process is remarkably similar to the single-asset case. We take the
-derivative with respect to our variable ($upright(bold(w))$), set it to
-zero, and solve. The only difference is that we're now using matrix
-calculus.
+If we leave the weights unrestricted, we can differentiate the
+objective and set the result to zero. Since $upright(bold(Sigma))$ is
+symmetric, this gives:
 
-Our objective function is:
-$ max_(upright(bold(w))) quad upright(bold(w))^T upright(bold(R)) - lambda / 2 upright(bold(w))^T upright(bold(Sigma)) upright(bold(w)) $
+$ upright(bold(mu)) - lambda upright(bold(Sigma)) upright(bold(w)) = 0 $
 
-Taking the derivative with respect to the vector $upright(bold(w))$ and
-setting it to zero gives us:
-$ upright(bold(R)) - lambda upright(bold(Sigma)) upright(bold(w)) = 0 $
+Assuming the covariance matrix is invertible, solving for the weights
+gives:
 
-Now, we just need to solve for $upright(bold(w))$. Rearranging the
-equation, we get:
-$ lambda upright(bold(Sigma)) upright(bold(w)) = upright(bold(R)) $
-$ upright(bold(w)) = 1 / lambda upright(bold(Sigma))^(- 1) upright(bold(R)) $
+$ upright(bold(w))^* = 1 / lambda upright(bold(Sigma))^(-1) upright(bold(mu)) $
 
-Let's pause and appreciate how elegant this solution is. It tells us
-that the optimal allocation $upright(bold(w))$ is proportional to
-$upright(bold(Sigma))^(- 1) upright(bold(R))$.
+This is the multi-asset equivalent of our single-asset solution $w^* =
+mu / (lambda sigma^2).$
 
-- This is the direct multi-asset equivalent of our single-asset
-  solution, $w = R \/ sigma^2$.
-- Instead of dividing by the variance ($sigma^2$), we multiply by the
-  #strong[inverse of the covariance matrix]
-  ($upright(bold(Sigma))^(- 1)$). This matrix inversion is the magic
-  step that accounts for all the complex interactions between every
-  asset in the portfolio.
-- The result is then scaled by our risk aversion, $1 \/ lambda$.
+This solution, however, is unrestricted meaning the weights can add up
+to more or less than one. That can be useful when forms of borrowing
+is allowed, but suppose we instead want a fully invested portfolio:
 
-#quote(block: true)[
-#strong[A note on constraints:] The solution above is for the
-unconstrained case. Adding the constraint that all weights must sum to
-one ($upright(bold(w))^T upright(bold(1)) = 1$) makes the math a bit
-more involved (it requires a technique called Lagrange multipliers), but
-the core concept remains the same: we are finding the weights that give
-us the best risk-return trade-off.
-]
+$ upright(bold(1))^T upright(bold(w)) = 1 $
 
-By solving this problem for different values of $lambda$, we can
-generate a whole family of optimal portfolios. This whole set of optimal
-portfolios is actually called the #strong[efficient frontier];. It's
-something that I'll dive into in a future post, but for now, let's solve
-an example portfolio.
+To include this constraint, we introduce a Lagrange multiplier $gamma$:
 
-== A Simple Worked Example
-<a-simple-worked-example>
-Let's make this real with a simple two-asset portfolio. Suppose we have
-two stocks:
+$ cal(L)(upright(bold(w)), gamma) = upright(bold(w))^T upright(bold(mu)) - lambda / 2 upright(bold(w))^T upright(bold(Sigma)) upright(bold(w)) + gamma (1 - upright(bold(1))^T upright(bold(w)) upright(bold(1))) $
 
-- #strong[TechCorp (T):] A high-growth tech stock.
-- #strong[GlobalGoods (G):] A stable, global consumer goods company.
+We then differentiate with respect to both $upright(bold(w))$ and
+   $gamma$:
 
-We've estimated their financial characteristics as follows:
+   $ frac(partial cal(L), partial upright(bold(w)))
+     &=
+       upright(bold(mu))
+       - lambda upright(bold(Sigma)) upright(bold(w))
+       - gamma upright(bold(1))
+       = 0 \
 
-- #strong[Expected Returns ($upright(bold(R))$):] TechCorp: 10%,
-  GlobalGoods: 6%
-- #strong[Standard Deviations ($sigma$):] TechCorp: 20%, GlobalGoods:
-  15%
-- #strong[Correlation ($rho$):] The returns have a low positive
-  correlation of 0.3.
+   frac(partial cal(L), partial gamma)
+     &=
+       1 - upright(bold(1))^T upright(bold(w))
+       = 0 $
 
-First, let's assemble our vectors and matrices.
+The first equation gives us:
 
-The #strong[returns vector] $upright(bold(R))$ is straightforward:
-$ upright(bold(R)) = mat(delim: "[", 0.10; 0.06) $
+   $ upright(bold(w))^*
+     = 1 / lambda
+       upright(bold(Sigma))^(-1)
+       \( upright(bold(mu)) - gamma upright(bold(1)) \) $
 
-For the #strong[covariance matrix] $upright(bold(Sigma))$, we need the
-variances and the covariance:
+   We choose $gamma$ so that the weights satisfy our full-investment
+   constraint:
 
-- Variance of TechCorp:
-  $sigma_T^2 = \( 0.20 \)^2 = 0.04$
-- Variance of GlobalGoods:
-  $sigma_G^2 = \( 0.15 \)^2 = 0.0225$
-- Covariance:
-  $upright("Cov") \( T \, G \) = rho_(T G) sigma_T sigma_G = 0.3 times 0.20 times 0.15 = 0.009$
+   $ gamma
+     = frac(
+         upright(bold(1))^T
+         upright(bold(Sigma))^(-1)
+         upright(bold(mu))
+         - lambda,
+         upright(bold(1))^T
+         upright(bold(Sigma))^(-1)
+         upright(bold(1)),
+       ) $
 
-So, our covariance matrix $upright(bold(Sigma))$ is:
-$ upright(bold(Sigma)) = mat(delim: "[", 0.04, 0.009; 0.009, 0.0225) $
+Together, these equations give us the portfolio that maximizes our
+mean-variance objective while investing exactly 100% of our capital.
 
-Now, let's solve for the optimal weights $upright(bold(w))$ using our
-formula:
-$upright(bold(w)) = 1 / lambda upright(bold(Sigma))^(- 1) upright(bold(R))$.
-We'll assume a moderate risk-aversion parameter of $lambda = 2$.
+The constraint still allows individual weights to be negative, meaning
+that short positions are permitted. Preventing short selling requires
+the additional constraints $w_i >= 0$, which generally means solving
+the problem numerically.
 
-+ #strong[Find the inverse of the covariance matrix
-  ($upright(bold(Sigma))^(- 1)$):] For a 2×2 matrix, this is a standard
-  procedure. The result is:
-  $ upright(bold(Sigma))^(- 1) approx mat(delim: "[", 27.47, - 10.99; - 10.99, 48.84) $
+Now, let's put some numbers into this and see how the calculation works.
 
-+ #strong[Multiply by the returns vector
-  ($upright(bold(Sigma))^(- 1) upright(bold(R))$):]
-  $ mat(delim: "[", 27.47, - 10.99; - 10.99, 48.84) mat(delim: "[", 0.10; 0.06) = mat(delim: "[", \( 27.47 times 0.10 \) + \( - 10.99 times 0.06 \); \( - 10.99 times 0.10 \) + \( 48.84 times 0.06 \)) = mat(delim: "[", 2.088; 1.831) $
+== Try It Yourself
+<try-it-yourself>
+#import "/typst/live.typ": live, input, formula, view, module
+#show: live
 
-+ #strong[Scale by risk aversion ($1 \/ lambda$):] With $lambda = 2$,
-  our scaling factor is $1 \/ 2 = 0.5$.
-  $ upright(bold(w)) = 0.5 times mat(delim: "[", 2.088; 1.831) = mat(delim: "[", 1.044; 0.915) $
+Let's use two imaginary stocks. TechCorp has an
+expected return of #input.number("mu_a", 0.10, min: -0.10, max: 0.30, step: 0.005, format: "percent", digits: 1)
+and a standard deviation of #input.number("sigma_a", 0.20, min: 0.01, max: 0.50, step: 0.01, format: "percent", digits: 0).
+GlobalGoods has an expected return of #input.number("mu_b", 0.06, min: -0.10, max: 0.30, step: 0.005, format: "percent", digits: 1)
+and a standard deviation of #input.number("sigma_b", 0.15, min: 0.01, max: 0.50, step: 0.01, format: "percent", digits: 0).
+Their correlation is #input.number("rho", 0.30, min: -0.95, max: 0.95, step: 0.05, digits: 2),
+and we'll use a risk-aversion parameter of
+#input.number("lambda", 2.0, min: 0.5, max: 10, step: 0.1, digits: 1).
 
-So our solution is to allocate 104.4% of our capital to TechCorp and
-91.5% to GlobalGoods.
+Drag any of the blue values to see the calculation update.
 
-#quote(block: true)[
-#strong[Wait, 104.4% + 91.5% = 195.9%? How is that possible?]
+#module("portfolio", ```js
+export function calculate(mu_a, sigma_a, mu_b, sigma_b, rho, lambda) {
+  const inputs = [mu_a, sigma_a, mu_b, sigma_b, rho, lambda];
+  if (!inputs.every(Number.isFinite)) throw new Error("every input must be finite");
+  if (sigma_a <= 0 || sigma_b <= 0) throw new Error("standard deviations must be positive");
+  if (rho <= -1 || rho >= 1) throw new Error("correlation must lie between -1 and 1");
+  if (lambda <= 0) throw new Error("risk aversion must be positive");
 
-Welcome to the concept of #strong[leverage];. The unconstrained solution
-we just calculated doesn't assume our weights must sum to 100%. A total
-allocation over 100% implies borrowing money to invest more than you
-have. In this case, you would borrow 95.9% of your capital to achieve
-this high-return (and high-risk!) portfolio. This is a strategy an
-investor with very low risk aversion might take.
-]
+  const covariance = rho * sigma_a * sigma_b;
+  const variance_a = sigma_a * sigma_a;
+  const variance_b = sigma_b * sigma_b;
+  const determinant = variance_a * variance_b - covariance * covariance;
+  if (!(determinant > 0)) throw new Error("the covariance matrix must be invertible");
 
-== What if you can't borrow?
-<what-if-you-cant-borrow>
-Most investors operate under the constraint that their weights must sum
-to 1 ($upright(bold(w))^T upright(bold(1)) = 1$). While the formal
-solution involves more complex math (Lagrange multipliers), the
-unconstrained solution we found still gives us something incredibly
-useful.
+  const sigma = [
+    [variance_a, covariance],
+    [covariance, variance_b],
+  ];
+  const inverse = [
+    [variance_b / determinant, -covariance / determinant],
+    [-covariance / determinant, variance_a / determinant],
+  ];
+  const sigma_inv_mu = [
+    inverse[0][0] * mu_a + inverse[0][1] * mu_b,
+    inverse[1][0] * mu_a + inverse[1][1] * mu_b,
+  ];
+  const sigma_inv_one = [
+    inverse[0][0] + inverse[0][1],
+    inverse[1][0] + inverse[1][1],
+  ];
+  const denominator = sigma_inv_one[0] + sigma_inv_one[1];
+  if (!(denominator > 0)) throw new Error("the full-investment constraint has no solution");
 
-If we #strong[normalize] our unconstrained weights so they sum to 1, we
-get the portfolio with the best possible risk-return trade-off.
+  const gamma = (sigma_inv_mu[0] + sigma_inv_mu[1] - lambda) / denominator;
+  const weights = [
+    (sigma_inv_mu[0] - gamma * sigma_inv_one[0]) / lambda,
+    (sigma_inv_mu[1] - gamma * sigma_inv_one[1]) / lambda,
+  ];
+  const weight_sum = weights[0] + weights[1];
+  if (!weights.every(Number.isFinite)) throw new Error("the portfolio weights are not finite");
+  if (Math.abs(weight_sum - 1) > 1e-9) throw new Error("the portfolio weights do not sum to one");
 
-- Total Weight = $1.044 + 0.915 = 1.959$
-- Normalized weight for TechCorp: $w_T = 1.044 \/ 1.959 approx 53.3 %$
-- Normalized weight for GlobalGoods:
-  $w_G = 0.915 \/ 1.959 approx 46.7 %$
+  const expected_return = weights[0] * mu_a + weights[1] * mu_b;
+  const variance =
+    weights[0] * weights[0] * variance_a
+    + 2 * weights[0] * weights[1] * covariance
+    + weights[1] * weights[1] * variance_b;
+  if (!Number.isFinite(expected_return)) throw new Error("the portfolio return is not finite");
+  if (!Number.isFinite(variance) || variance < 0) throw new Error("the portfolio variance is invalid");
 
-This particular portfolio (53.3% TechCorp, 46.7% GlobalGoods) is
-special. It's the portfolio that maximizes our return for the risk we
-are taking.
+  return [
+    [mu_a, mu_b],
+    covariance,
+    sigma,
+    inverse,
+    sigma_inv_mu,
+    sigma_inv_one,
+    gamma,
+    weights,
+    expected_return,
+    variance,
+  ];
+}
+```)
 
-And that's pretty much the core of it! We've walked through the math,
-starting with a single asset and building up to a neat way of handling a
-whole portfolio with matrices. By solving for the weights and then
-normalizing them, we landed on a specific mix: about 53% in TechCorp and
-47% in GlobalGoods.
+#formula("calculation", "portfolio.calculate")
 
-It's interesting that no matter what our personal risk aversion $lambda$ was,
-the #emph[ratio] between the assets stayed the same. Normalizing them
-just gives us a tangible portfolio to look at.
+First, the covariance and our two input matrices are:
 
-But this definitely opens up more questions. What's so special about
-this specific 53/47 mix? And what about the constraint that most of us
-have: that our investments must add up to 100%? We kind of sidestepped
-that with our normalization trick.
+$ upright("Cov") \( A, B \) = #view("calculation", index: 1, digits: 4) $
 
-These are deeper topics in portfolio theory, and we'll definitely dig
-into them in a future post. For now, hopefully, this gives a solid feel
-for the fundamental math involved. Thanks for reading.
+$ upright(bold(mu)) = #view("calculation", index: 0, format: "percent", digits: 1) quad
+  upright(bold(Sigma)) = #view("calculation", index: 2, digits: 4) $
+
+The inverse covariance matrix is:
+
+$ upright(bold(Sigma))^(-1) = #view("calculation", index: 3, digits: 2) $
+
+The remaining values in the constrained solution are:
+
+$ upright(bold(Sigma))^(-1) upright(bold(mu))
+  = #view("calculation", index: 4, digits: 3) $
+
+$ upright(bold(Sigma))^(-1) upright(bold(1))
+  = #view("calculation", index: 5, digits: 3) quad
+  gamma = #view("calculation", index: 6, digits: 4) $
+
+Finally, the fully invested portfolio is:
+
+$ upright(bold(w))^* = #view("calculation", index: 7, format: "percent", digits: 1) $
+
+Its expected return is #view("calculation", index: 8, format: "percent", digits: 2)
+and its variance is #view("calculation", index: 9, digits: 4).
+
+This puts #view("calculation", index: (7, 0), format: "percent",
+digits: 1) in TechCorp and #view("calculation", index: (7, 1), format:
+"percent", digits: 1) in GlobalGoods. Changing any of the assumptions
+above runs the same calculation again immediately.
+
+And that's pretty much the core of it! We started with a single asset,
+introduced covariance for multiple assets, and ended up with a compact
+way to optimize an entire portfolio. Thanks for reading.

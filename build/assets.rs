@@ -150,6 +150,7 @@ fn content_type(path: &str) -> Result<&'static str, Box<dyn Error>> {
         .ok_or_else(|| io_error(format!("asset has no extension: {path}")))?;
     let content_type = match extension {
         "css" => "text/css; charset=utf-8",
+        "js" => "text/javascript; charset=utf-8",
         "otf" => "font/otf",
         "pdf" => "application/pdf",
         "png" => "image/png",

@@ -91,6 +91,7 @@ pub fn compile(compiler: &Compiler, source_path: &Path) -> Result<CompiledPost, 
         date_rss: date_time.to_rfc2822(),
         archived: metadata.archived,
         tags: metadata.tags,
+        interactive: content.contains("data-live="),
         content,
         estimated_read_time,
     })
@@ -335,6 +336,7 @@ pub struct CompiledPost {
     pub(crate) tags: Vec<String>,
     pub(crate) content: String,
     pub(crate) estimated_read_time: usize,
+    pub(crate) interactive: bool,
 }
 
 struct PostMetadata {

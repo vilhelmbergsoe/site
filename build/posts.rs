@@ -80,6 +80,7 @@ fn write_generated_posts(
         let written = fs::read_to_string(&content_path)?;
         assert_eq!(written, post.content);
         assert!(!written.is_empty());
+        assert_eq!(post.interactive, written.contains("data-live="));
         writeln!(
             generated,
             "        content: include_str!(concat!(env!(\"OUT_DIR\"), \"/site/posts/{}.html\")),",
@@ -90,6 +91,7 @@ fn write_generated_posts(
             "        estimated_read_time: {},",
             post.estimated_read_time
         )?;
+        writeln!(generated, "        interactive: {},", post.interactive)?;
         writeln!(generated, "    }},")?;
     }
     generated.push_str("];\n");

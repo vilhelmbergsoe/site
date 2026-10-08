@@ -51,6 +51,8 @@ struct GeneratedPost {
     tags: &'static [&'static str],
     content: &'static str,
     estimated_read_time: usize,
+    // Whether the post contains live cells and needs /assets/live.js.
+    interactive: bool,
 }
 
 include!(concat!(env!("OUT_DIR"), "/site/posts.rs"));

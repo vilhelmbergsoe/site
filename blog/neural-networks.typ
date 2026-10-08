@@ -8,7 +8,7 @@
 #set document(title: post.title, date: post.date, keywords: post.tags)
 #metadata(post) <post-meta>
 
-#import "/typst/post.typ": anchored-headings
+#import "/typst/post.typ": anchored-headings, drawing
 #import "@preview/cetz:0.5.0"
 
 #show: anchored-headings
@@ -16,27 +16,6 @@
 #let diagram-stroke = 0.55pt
 #let node-text-size = 9.5pt
 #let arrowhead = (end: ">", fill: black, scale: 0.72)
-
-#let drawing(alt, display-width: "30rem", ..args) = {
-  assert(type(alt) == str)
-  assert(alt.trim() != "")
-  assert(type(display-width) == str)
-  assert(display-width.trim() != "")
-
-  let canvas = pad(x: 3pt, y: 3pt, cetz.canvas(..args))
-  context if target() == "html" {
-    html.elem("div", attrs: (
-      class: "typst-diagram",
-      style: "--diagram-width: " + display-width,
-      role: "img",
-      aria-label: alt,
-    ))[
-      #html.frame(canvas)
-    ]
-  } else {
-    canvas
-  }
-}
 
 #quote(block: true)[
 I originally wrote these notes as a way to make the concepts more

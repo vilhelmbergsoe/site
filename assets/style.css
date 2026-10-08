@@ -266,24 +266,28 @@ code {
     word-break: break-word;
     background-color: var(--code-bc);
     color: var(--code-tc);
-    padding: 0.1em 0.3em;
-    border-radius: 3px;
+    padding: 0.03em 0.18em;
+    border-radius: 1px;
+    font-size: 0.9em;
 }
 
 pre {
     display: block;
+    margin-bottom: 0.8rem;
     background-color: var(--code-bc);
-    border: 1px solid var(--tc);
-    border-radius: 3px;
-    padding: 1em;
+    border-radius: 2px;
+    padding: 0.65em 0.8em;
     font-size: 0.9em;
     overflow: auto;
 }
 
 pre > code {
     padding: 0;
+    border-radius: 0;
     background-color: transparent;
     color: var(--code-tc);
+    font-size: 1em;
+    word-break: normal;
 }
 
 input,
@@ -407,4 +411,190 @@ pre code .punctuation {
 pre code .variable {
     color: var(--syntax-variable);
     font-style: italic;
+}
+
+/* --- Interactive posts (see /typst/live.typ and /assets/live.js) --- */
+
+.live-number.is-live {
+    color: var(--hc);
+    border-bottom: 1px dashed var(--hc);
+    cursor: ew-resize;
+    font-variant-numeric: tabular-nums;
+    /* Horizontal drags change the number; vertical swipes still scroll. */
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.live-number.is-live:focus-visible {
+    outline: 2px solid var(--hc);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.live-number.is-dragging {
+    border-bottom-style: solid;
+}
+
+.live-view {
+    font-variant-numeric: tabular-nums;
+}
+
+.live-placeholder {
+    font-size: 0.85em;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+div.live-view .live-placeholder,
+div.live-widget .live-placeholder {
+    margin: 1rem 0;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border: 1px dashed color-mix(in srgb, var(--tc) 40%, transparent);
+    border-radius: 3px;
+}
+
+.live-error {
+    color: #c92a2a;
+    font-family: monospace;
+    font-size: 0.85em;
+}
+
+.live-choice select {
+    font: inherit;
+    color: var(--hc);
+    background: var(--bc);
+    border: 1px solid color-mix(in srgb, var(--hc) 60%, transparent);
+    border-radius: 3px;
+}
+
+.live-toggle input {
+    accent-color: var(--hc);
+    margin: 0 0.15em;
+}
+
+.live-table {
+    margin-bottom: 1rem;
+}
+
+.live-table table {
+    margin-bottom: 0.5rem;
+}
+
+.live-table td {
+    padding: 0.2em 0.4em;
+}
+
+.live-table input {
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--tc);
+    background: var(--bc);
+    border: 1px solid color-mix(in srgb, var(--tc) 30%, transparent);
+    border-radius: 3px;
+    padding: 0.15em 0.3em;
+    font-variant-numeric: tabular-nums;
+}
+
+.live-table button {
+    color: var(--hc);
+    background: none;
+    border: 1px solid color-mix(in srgb, var(--hc) 60%, transparent);
+    border-radius: 3px;
+    padding: 0.1em 0.6em;
+    cursor: pointer;
+}
+
+.live-plot-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    touch-action: pan-y;
+}
+
+.live-plot-svg text {
+    font-family: var(--font-main);
+    font-size: 14px;
+    fill: var(--tc);
+}
+
+.live-plot-svg .live-plot-tick {
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+}
+
+.live-plot-grid {
+    stroke: var(--tc);
+    stroke-opacity: 0.1;
+}
+
+.live-plot-zero,
+.live-plot-axis {
+    stroke: var(--tc);
+    stroke-opacity: 0.45;
+}
+
+.live-plot-mark {
+    stroke: var(--tc);
+    stroke-opacity: 0.6;
+    stroke-dasharray: 2 4;
+}
+
+/* Series differ by dash pattern as well as color, so they stay distinct
+   for colorblind readers and in print. */
+.live-plot-series {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.live-plot-series.series-0 { stroke: var(--hc); stroke-width: 2.5; }
+.live-plot-series.series-1 { stroke: var(--tc); stroke-opacity: 0.75; stroke-dasharray: 8 5; }
+.live-plot-series.series-2 { stroke: var(--tc); stroke-opacity: 0.75; stroke-dasharray: 2 4; }
+.live-plot-series.series-3 { stroke: var(--hc); stroke-opacity: 0.6; stroke-dasharray: 8 4 2 4; }
+
+.live-plot-crosshair line {
+    stroke: var(--tc);
+    stroke-opacity: 0.35;
+}
+
+.live-plot-crosshair circle {
+    fill: var(--bc);
+    stroke-width: 2;
+}
+
+.live-plot-crosshair circle.series-0 { stroke: var(--hc); }
+.live-plot-crosshair circle.series-1,
+.live-plot-crosshair circle.series-2 { stroke: var(--tc); }
+.live-plot-crosshair circle.series-3 { stroke: var(--hc); }
+
+.live-plot-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 1.2rem;
+    font-size: 0.9em;
+}
+
+.live-plot-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.live-plot-swatch {
+    width: 1.6em;
+    height: 0.6em;
+    overflow: visible;
+}
+
+.live-plot-readout {
+    margin-top: 0.2rem;
+    font-size: 0.85em;
+    opacity: 0.8;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
 }

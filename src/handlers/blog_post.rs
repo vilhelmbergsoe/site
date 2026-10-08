@@ -32,6 +32,9 @@ pub async fn handle_blog_post(Path(url): Path<String>) -> Response {
                         br;
                         (PreEscaped(blogpost.content))
                     }
+                    @if blogpost.interactive {
+                        script type="module" src="/assets/live.js" {}
+                    }
 
                     div {
                         "tags: ["
