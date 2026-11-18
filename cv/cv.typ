@@ -104,7 +104,7 @@
   [#heading(
     "University of Copenhagen",
     "Copenhagen, Denmark",
-    (("B.Sc. in Mathematics", "2024 – Present"),),
+    (("B.Sc. in Mathematics", "2025 – Present"),),
   )],
   [#heading(
     "Niels Brock Innovationsgymnasiet",
